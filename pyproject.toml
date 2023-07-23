@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ndf-parse"
+authors = [{name = "Ulibos"}]
+description = "A package for parsing and editing Eugen Systems ndf files."
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+keywords = ["ndf", "parser", "parsing"]
+dynamic = ["version"]
+dependencies = ["tree-sitter"]
+
+[project.optional-dependencies]
+dev = [
+    "sphinx ~= 5.0.0",
+    "sphinx-rtd-theme >= 1.2",
+    "myst-parser ~= 1.0.0"
+]
+
+[tool.setuptools]
+packages = ["ndf_parse", "ndf_parse.bin"]
+
+[tool.setuptools.package-data]
+ndf_parse = ["bin/ndf.dll"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ndf_parse.__version__"}
