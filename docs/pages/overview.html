@@ -131,9 +131,9 @@ if you have Visual Studio installed) then you can proceed directly to the <a cla
 step</a>. If you’re feeling like downloading the thing then download and
 install the Build Tools, then proceed to the <a class="reference external" href="#installing-ndf-parse">last step</a>. If you don’t
 want to waste your drive space then download one of prebuilt versions from a
-release section (make sure to match it to your python version, that being
-<code class="docutils literal notranslate"><span class="pre">cp###</span></code>), say, <code class="docutils literal notranslate"><span class="pre">tree_sitter-0.20.1-cp311-cp311-win_amd64.whl</span></code> open command
-prompt and execute the following:</p>
+<a class="reference external" href="https://github.com/Ulibos/ndf-parse/releases/tag/v0.1.0">v0.1.0 release</a> (make sure to match it to your python version, that
+being <code class="docutils literal notranslate"><span class="pre">cp###</span></code>), say, <code class="docutils literal notranslate"><span class="pre">tree_sitter-0.20.1-cp311-cp311-win_amd64.whl</span></code>, open
+command prompt and execute the following:</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Note that if you didn’t add python to the PATH variable during installation,
@@ -146,9 +146,9 @@ you’ll have to run it with full path to <cite>pip</cite>, for example
 </section>
 <section id="installing-ndf-parse">
 <h3>Installing ndf-parse<a class="headerlink" href="#installing-ndf-parse" title="Permalink to this heading"></a></h3>
-<p>Download one of the provided releases, say,
-<code class="docutils literal notranslate"><span class="pre">ndf_parse-0.1.0-py3-none-any.whl</span></code>. Open command prompt and execute:</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>pip install C:\path\to\ndf_parse-0.1.0-py3-none-any.whl
+<p>Download the <a class="reference external" href="https://github.com/Ulibos/ndf-parse/releases">latest release</a>, say,
+<code class="docutils literal notranslate"><span class="pre">ndf_parse-#.#.#-py3-none-any.whl</span></code>. Open command prompt and execute:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>pip install C:\path\to\ndf_parse-#.#.#-py3-none-any.whl
 </pre></div>
 </div>
 </section>
@@ -175,12 +175,15 @@ and run the following command:</p>
 </pre></div>
 </div>
 <p>It will load most dependencies automatically. Only thing you will have to
-provide manually is an <code class="docutils literal notranslate"><span class="pre">ndf.dll</span></code> (<a class="reference external" href="#using-in-pair-with-custom-tree-sitter-ndf">see below</a>).</p>
+provide manually is an <code class="docutils literal notranslate"><span class="pre">ndf.dll</span></code> (<a class="reference external" href="#using-in-pair-with-custom-tree-sitter-ndf">see below</a>). You can build a release
+package using <code class="docutils literal notranslate"><span class="pre">scripts\build_package.bat</span></code> script. It outputs the result to a
+<code class="docutils literal notranslate"><span class="pre">build\package</span></code> folder. By default the build sctipt uses a local library
+(<code class="docutils literal notranslate"><span class="pre">ndf_parse\bin\ndf.dll</span></code>). If there is none, it copies one from tree-sitter’s
+default build path to local path. If there is also none then it refuses to
+build.</p>
 <p><a class="reference external" href="https://pypi.org/project/black/">black</a> is used for code styling
 with line length limit == 79. Code is (mostly) type hinted. <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> does
 not store editor specific excludes, I store those in <code class="docutils literal notranslate"><span class="pre">.git\info\exclude</span></code>.</p>
-<p>The package can be built using <code class="docutils literal notranslate"><span class="pre">scripts\build_package.bat</span></code> script. It outputs
-the result to <code class="docutils literal notranslate"><span class="pre">build\package</span></code> folder.</p>
 <section id="repo-structure">
 <h3>Repo Structure<a class="headerlink" href="#repo-structure" title="Permalink to this heading"></a></h3>
 <ul class="simple">
@@ -211,7 +214,7 @@ priority):</p>
 (<code class="docutils literal notranslate"><span class="pre">&quot;C:\custom\path\to\ndf.dll&quot;</span></code>),</p></li>
 <li><p>default tree-sitter’s build path
 (<code class="docutils literal notranslate"><span class="pre">&quot;%LocalAppData%\tree-sitter\lib\ndf.dll&quot;</span></code>),</p></li>
-<li><p>a copy bundled with the package (<code class="docutils literal notranslate"><span class="pre">ndf_parse\bun\ndf.dll</span></code>).</p></li>
+<li><p>a copy bundled with the package (<code class="docutils literal notranslate"><span class="pre">ndf_parse\bin\ndf.dll</span></code>).</p></li>
 </ol>
 <p>The repo itself does not hold a prebuilt copy of the library so you’ll have to
 either yank one from a release wleel (it’s just a renamed zip) or build one

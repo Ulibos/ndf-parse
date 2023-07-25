@@ -22,7 +22,7 @@ from . import printer
 from . import traverser
 from . import model
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # 3 places to search for ndf.dll in descending priority order:
 # 1. - via env variable NDF_LIB_PATH
