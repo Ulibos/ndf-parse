@@ -22,7 +22,7 @@ from . import printer
 from . import traverser
 from . import model
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 # 3 places to search for ndf.dll in descending priority order:
 # 1. - via env variable NDF_LIB_PATH
@@ -434,14 +434,16 @@ def walk(
     """
     if condition(item):
         yield item
-    unwrapped_item: model.CellValue
-    if isinstance(item, model.DeclListRow) and hasattr(item, "value"):
-        unwrapped_item = getattr(item, "value")
-    else:
-        unwrapped_item = item  # type: ignore
-    if isinstance(unwrapped_item, model.DeclarationsList):
-        for view in unwrapped_item:
-            for result in walk(view, condition):
+    if isinstance(item, model.DeclListRow):
+        for result in walk(item.value, condition):  # type: ignore
+            yield result
+    if isinstance(item, model.Template):
+        for param in item.params:
+            for result in walk(param, condition):
+                yield result
+    if isinstance(item, model.DeclarationsList):
+        for row in item:
+            for result in walk(row, condition):
                 yield result
 
 
