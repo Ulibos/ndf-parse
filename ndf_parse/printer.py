@@ -206,7 +206,8 @@ def param_printer(state: State, param: md.ParamRow):
     if typ is not None:
         w(f": {typ}")
     if val is not None:
-        w(f" = {val}")
+        w(f" = ")
+        parse(state, val)
 
 
 def member_printer(state: State, member: md.MemberRow):

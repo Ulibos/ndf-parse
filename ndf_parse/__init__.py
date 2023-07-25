@@ -293,7 +293,9 @@ class Mod:
         if len(self.edits):
             edit = self.edits.pop()
             if edit.save:
-                with open(self.__dst(edit.file_path), "w") as w:
+                with open(
+                    self.__dst(edit.file_path), "w", encoding="utf-8"
+                ) as w:
                     printer.format(edit.tree, w)
         return False
 
