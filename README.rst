@@ -41,12 +41,13 @@ if you have Visual Studio installed) then you can proceed directly to the `last
 step <inst_>`__. If you're feeling like downloading the thing then download and
 install the Build Tools, then proceed to the `last step <inst_>`__. If you don't
 want to waste your drive space then download one of prebuilt versions from a
-release section (make sure to match it to your python version, that being
-``cp###``), say, ``tree_sitter-0.20.1-cp311-cp311-win_amd64.whl`` open command
-prompt and execute the following:
+`v0.1.0 release <pbts_>`__ (make sure to match it to your python version, that
+being ``cp###``), say, ``tree_sitter-0.20.1-cp311-cp311-win_amd64.whl``, open
+command prompt and execute the following:
 
 .. _msbt: https://visualstudio.microsoft.com/visual-cpp-build-tools/
 .. _inst: #installing-ndf-parse
+.. _pbts: https://github.com/Ulibos/ndf-parse/releases/tag/v0.1.0
 
 .. note::
    Note that if you didn't add python to the PATH variable during installation,
@@ -60,12 +61,14 @@ prompt and execute the following:
 Installing ndf-parse
 ~~~~~~~~~~~~~~~~~~~~
 
-Download one of the provided releases, say,
-``ndf_parse-0.1.0-py3-none-any.whl``. Open command prompt and execute:
+Download the `latest release <rls_>`__, say,
+``ndf_parse-#.#.#-py3-none-any.whl``. Open command prompt and execute:
 
 .. code:: bat
 
-   pip install C:\path\to\ndf_parse-0.1.0-py3-none-any.whl
+   pip install C:\path\to\ndf_parse-#.#.#-py3-none-any.whl
+
+.. _rls: https://github.com/Ulibos/ndf-parse/releases
 
 Using This Package
 ------------------
@@ -94,16 +97,18 @@ and run the following command:
    # note the [dev] part
 
 It will load most dependencies automatically. Only thing you will have to
-provide manually is an ``ndf.dll`` (`see below`__).
+provide manually is an ``ndf.dll`` (`see below`__). You can build a release
+package using ``scripts\build_package.bat`` script. It outputs the result to a
+``build\package`` folder. By default the build sctipt uses a local library
+(``ndf_parse\bin\ndf.dll``). If there is none, it copies one from tree-sitter's
+default build path to local path. If there is also none then it refuses to
+build.
 
 .. __: #using-in-pair-with-custom-tree-sitter-ndf
 
 `black <https://pypi.org/project/black/>`__ is used for code styling
 with line length limit == 79. Code is (mostly) type hinted. ``.gitignore`` does
 not store editor specific excludes, I store those in ``.git\info\exclude``.
-
-The package can be built using ``scripts\build_package.bat`` script. It outputs
-the result to ``build\package`` folder.
 
 Repo Structure
 ~~~~~~~~~~~~~~
@@ -137,7 +142,7 @@ priority):
    (``"C:\custom\path\to\ndf.dll"``),
 2. default tree-sitter's build path
    (``"%LocalAppData%\tree-sitter\lib\ndf.dll"``),
-3. a copy bundled with the package (``ndf_parse\bun\ndf.dll``).
+3. a copy bundled with the package (``ndf_parse\bin\ndf.dll``).
 
 The repo itself does not hold a prebuilt copy of the library so you'll have to
 either yank one from a release wleel (it's just a renamed zip) or build one
