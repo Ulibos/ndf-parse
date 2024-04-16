@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 import dataclasses as dc
 import typing as tp
-from typing import overload, Any, Optional, Union, Dict, Tuple
+from typing import overload, Any, Optional, Union, Dict, Tuple, Literal
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -574,15 +574,13 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
         self.parent: Optional[DeclarationsList[Any]] = None
 
     @overload
-    def _find_by(self, attr_name: str, value: Any) -> int:
-        ...
-
+    def _find_by(self, attr_name: str, value: Any) -> int: ...
     @overload
-    def _find_by(
-        self, attr_name: str, value: Any, strict: bool = False
-    ) -> Optional[int]:
-        ...
-
+    def _find_by(self, attr_name: str, value: Any, strict: Literal[False]) -> Optional[int]: ...
+    @overload
+    def _find_by(self, attr_name: str, value: Any, strict: Literal[True]) -> int: ...
+    @overload
+    def _find_by(self, attr_name: str, value: Any, strict: bool) -> Optional[int]: ...
     def _find_by(
         self, attr_name: str, value: Any, strict: bool = True
     ) -> Optional[int]:
@@ -624,8 +622,12 @@ class List(DeclarationsList[ListRow]):
     @overload
     def by_namespace(self, namespace: str) -> ListRow: ...
     @overload
-    def by_namespace(self, namespace: str, strict : bool) -> Optional[ListRow]: ...
-    def by_namespace(self, namespace: str, strict : bool = True) -> Optional[ListRow]:
+    def by_namespace(self, namespace: str, strict: Literal[True]) -> ListRow: ...
+    @overload
+    def by_namespace(self, namespace: str, strict: Literal[False]) -> Optional[ListRow]: ...
+    @overload
+    def by_namespace(self, namespace: str, strict: bool) -> Optional[ListRow]: ...
+    def by_namespace(self, namespace: str, strict: bool = True) -> Optional[ListRow]:
         """Find row by it's namespace. Returns first match that is found. If
         none found and `strict` is ``True`` then raises an error. If ``False``
         then returns None. If `strict` is not set then it's ``True`` by default.
@@ -670,8 +672,12 @@ class Object(DeclarationsList[MemberRow]):
     @overload
     def by_namespace(self, namespace: str) -> MemberRow: ...
     @overload
-    def by_namespace(self, namespace: str, strict : bool) -> Optional[MemberRow]: ...
-    def by_namespace(self, namespace: str, strict : bool = True) -> Optional[MemberRow]:
+    def by_namespace(self, namespace: str, strict: Literal[True]) -> MemberRow: ...
+    @overload
+    def by_namespace(self, namespace: str, strict: Literal[False]) -> Optional[MemberRow]: ...
+    @overload
+    def by_namespace(self, namespace: str, strict: bool) -> Optional[MemberRow]: ...
+    def by_namespace(self, namespace: str, strict: bool = True) -> Optional[MemberRow]:
         """Find row by it's namespace. Returns first match that is found. If
         none found and `strict` is ``True`` then raises an error. If ``False``
         then returns None. If `strict` is not set then it's ``True`` by default.
@@ -696,8 +702,12 @@ class Object(DeclarationsList[MemberRow]):
     @overload
     def by_member(self, member: str) -> MemberRow: ...
     @overload
-    def by_member(self, member: str, strict : bool) -> Optional[MemberRow]: ...
-    def by_member(self, member: str, strict : bool = True) -> Optional[MemberRow]:
+    def by_member(self, member: str, strict: Literal[True]) -> MemberRow: ...
+    @overload
+    def by_member(self, member: str, strict: Literal[False]) -> Optional[MemberRow]: ...
+    @overload
+    def by_member(self, member: str, strict: bool) -> Optional[MemberRow]: ...
+    def by_member(self, member: str, strict: bool = True) -> Optional[MemberRow]:
         """Returns first match that is found. If none found and `strict` is
         ``True`` then raises an error. If ``False`` then returns None. If
         `strict` is not set then it's ``True`` by default.
@@ -750,8 +760,12 @@ class Params(DeclarationsList[ParamRow]):
     @overload
     def by_param(self, param: str) -> ParamRow: ...
     @overload
-    def by_param(self, param: str, strict : bool) -> Optional[ParamRow]: ...
-    def by_param(self, param: str, strict : bool = True) -> Optional[ParamRow]:
+    def by_param(self, param: str, strict: Literal[True]) -> ParamRow: ...
+    @overload
+    def by_param(self, param: str, strict: Literal[False]) -> Optional[ParamRow]: ...
+    @overload
+    def by_param(self, param: str, strict: bool) -> Optional[ParamRow]: ...
+    def by_param(self, param: str, strict: bool = True) -> Optional[ParamRow]:
         """Find row by it's namespace. Returns first match that is found. If
         none found and `strict` is ``True`` then raises an error. If ``False``
         then returns None. If `strict` is not set then it's ``True`` by default.
@@ -801,8 +815,12 @@ class Map(DeclarationsList[MapRow]):
     @overload
     def by_key(self, key: str) -> MapRow: ...
     @overload
-    def by_key(self, key: str, strict : bool) -> Optional[MapRow]: ...
-    def by_key(self, key: str, strict : bool = True) -> Optional[MapRow]:
+    def by_key(self, key: str, strict: Literal[True]) -> MapRow: ...
+    @overload
+    def by_key(self, key: str, strict: Literal[False]) -> Optional[MapRow]: ...
+    @overload
+    def by_key(self, key: str, strict: bool) -> Optional[MapRow]: ...
+    def by_key(self, key: str, strict: bool = True) -> Optional[MapRow]:
         """Find row by it's key. Returns first match or None if not found. If
         none found and `strict` is ``True`` then raises an error. If ``False``
         then returns None. If `strict` is not set then it's ``True`` by default.
