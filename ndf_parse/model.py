@@ -48,8 +48,40 @@ MAP_ROWS_FLAT = flatten(MAP_ROWS)
 def verify_kwargs(
     kwargs: Dict[str, OptCellVal],
     owner: tp.Type[DeclListRow],
-    strict: bool = True,  # TODO: FIX!
+    strict: bool = True,
 ):
+    """verify_kwargs(kwargs: dict, owner: type, strict = True)
+    Function to verify that kwargs don't contain colliding attributes and
+    garbage keys.
+
+    Parameters
+    ----------
+    kwargs : Dict[str, OptCellVal]
+        dict of kwargs who's keys to validate.
+    owner : tp.Type[DeclListRow]
+        Class/subclass to check against.
+    strict : bool, default=True
+        If set to ``True`` and kwargs have a key that doesn't match against any
+        property of the owner, then throws an exception. If set to ``False``
+        then ignores any non-represented keys but still tracks parameter
+        collisions.
+
+    Raises
+    ------
+    TypeError
+        If strict mode is set and there was a key that doesn't represent any
+        owner's parameter.
+    TypeError
+        If there is a parameter collision (2 or more aliases are simultaneously
+        present in kwargs).
+    """
+    if strict:
+        for k in kwargs:
+            if not k in owner._args_names_flat:
+                raise TypeError(
+                    f"Cannot set {owner.__name__}.{k}, attribute does "
+                    "not exist."
+                )
     for args in owner._args_names:  # type: ignore
         num_collisions = 0
         for arg in args:
@@ -64,16 +96,30 @@ def verify_kwargs(
 def iterate_args(
     kwargs: Dict[str, OptCellVal],
     owner: tp.Type[Union[DeclListRow_co, DeclarationsList[DeclListRow_co]]],
-    strict: bool = True,
 ) -> tp.Iterator[Tuple[str, OptCellVal]]:
+    """iterate_args(kwargs, owner) -> Iterator<str, OptCellVal>
+    Applies kwargs to the owner. It never fails. Any kwargs that are not
+    represented as parameters of the owner are simply ignored. Any collisions
+    are passed as is.
+
+    Parameters
+    ----------
+    kwargs : Dict[str, OptCellVal]
+        kwargs to apply to the owner.
+    owner : tp.Type[Union[DeclListRow, DeclarationsList[DeclListRow]]]
+        Class/subclass to apply kwargs to.
+
+    Returns
+    -------
+    tp.Iterator[Tuple[str, OptCellVal]]
+        Garbage free ``parameter: value`` pair iterator.
+
+    Yields
+    ------
+    Iterator[tp.Iterator[Tuple[str, OptCellVal]]]
+        ``parameter: value`` pair.
+    """
     for k, v in kwargs.items():
-        if k not in owner._args_names_flat:  # type: ignore
-            if strict:
-                raise TypeError(
-                    f"Cannot set {owner.__name__}.{k}, attribute does "
-                    "not exist."
-                )
-        else:
             for aliases in owner._args_names:  # type: ignore
                 if k in aliases:
                     yield (aliases[0], v)  # use original parameter name
@@ -184,7 +230,7 @@ class DeclListRow:
         TypeError: Cannot set MemberRow.nonexistent, attribute does not exist.
         """
         verify_kwargs(kwargs, self.__class__, _strict)
-        for k, v in iterate_args(kwargs, self.__class__, _strict):
+        for k, v in iterate_args(kwargs, self.__class__):
             self.__parent(v)
             setattr(self, k, v)
         return self
@@ -491,9 +537,9 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
         """
         verify_kwargs(kwargs, self._row_type, _strict)
         result = self._row_type(
-            self, **dict(iterate_args(kwargs, self._row_type, _strict))
+            self, **dict(iterate_args(kwargs, self._row_type))
         )
-        self.append(result)
+        super().append(result)
         return result
 
     def insert(  # type: ignore
@@ -518,7 +564,7 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
         """
         verify_kwargs(kwargs, self._row_type, _strict)
         result = self._row_type(
-            self, **dict(iterate_args(kwargs, self._row_type, _strict))
+            self, **dict(iterate_args(kwargs, self._row_type))
         )
         super().insert(index, result)
         return result
