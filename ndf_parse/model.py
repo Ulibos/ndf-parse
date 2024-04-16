@@ -7,11 +7,10 @@ import dataclasses as dc
 import typing as tp
 from typing import overload, Any, Optional, Union, Dict, Tuple
 
-if sys.version_info > (3, 10):
+if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-
 
 ##################################### Consts ###################################
 
