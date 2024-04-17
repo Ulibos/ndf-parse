@@ -6,6 +6,7 @@ import sys
 import dataclasses as dc
 import typing as tp
 from typing import overload, Any, Optional, Union, Dict, Tuple, Literal
+import copy
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -260,6 +261,16 @@ class DeclListRow:
                     'Cannot reparent an object of type `DeclarationsList`, '
                     'operation not allowed!'
                 )
+
+    def copy(self, memo: Optional[Dict[int, Any]] = None) -> Dict[str, OptCellVal]:
+        if isinstance(memo, dict):
+            _memo = memo
+        else:
+            _memo: Dict[int, Any] = {}
+        result: Dict[str, OptCellVal] = {}
+        _memo[id(self)] = result
+        result.update({k: copy.deepcopy(getattr(self, k), _memo) for k in self.__full_args_names()})
+        return result
 
 
 @dc.dataclass(repr=False)
@@ -573,6 +584,19 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
         super().__init__()
         self.parent: Optional[DeclarationsList[Any]] = None
 
+    def __deepcopy__(self, memo: Dict[int, Any]):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__init__()
+        memo[id(result)] = result
+        for v in self:
+            copied: Dict[str, OptCellVal] = v.copy(memo)
+            result.add(**copied, _strict=False)
+        return result
+
+    def copy(self):
+        return copy.deepcopy(self)
+
     @overload
     def _find_by(self, attr_name: str, value: Any) -> int: ...
     @overload
@@ -617,6 +641,12 @@ class List(DeclarationsList[ListRow]):
         super().__init__()
         self.is_root: bool = is_root
         self.type: OptStr = type
+
+    def __deepcopy__(self, memo: Dict[int, Any]):
+        result = super().__deepcopy__(memo)
+        result.is_root = self.is_root
+        result.type = self.type
+        return result
 
     # fmt: off
     @overload
@@ -667,6 +697,11 @@ class Object(DeclarationsList[MemberRow]):
     def __init__(self):
         super().__init__()
         self.type: OptStr = None
+
+    def __deepcopy__(self, memo: Dict[int, Any]):
+        result = super().__deepcopy__(memo)
+        result.type = self.type
+        return result
 
     # fmt: off
     @overload
@@ -749,6 +784,11 @@ class Template(Object):
         super().__init__()
         self.params = Params()
 
+    def __deepcopy__(self, memo: Dict[int, Any]):
+        result = super().__deepcopy__(memo)
+        result.type = self.type
+        result.params = copy.deepcopy(self.params, memo)
+        return result
 
 class Params(DeclarationsList[ParamRow]):
     """Params represents a list of generic parameters to be used in a template.
