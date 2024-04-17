@@ -582,7 +582,7 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
 
     def __init__(self):
         super().__init__()
-        self.parent: Optional[DeclarationsList[Any]] = None
+        self.parent: Optional[DeclarationsList[DeclListRow]] = None
 
     def __deepcopy__(self, memo: Dict[int, Any]):
         cls = self.__class__
@@ -596,6 +596,12 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
 
     def copy(self):
         return copy.deepcopy(self)
+
+    def __setitem__(self, key, value):  # type: ignore
+        raise KeyError(
+            "Not allowed to directly set items in Lists! Use `add()` and "
+            "`insert()` methods instead."
+        )
 
     @overload
     def _find_by(self, attr_name: str, value: Any) -> int: ...
