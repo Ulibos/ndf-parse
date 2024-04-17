@@ -78,7 +78,7 @@ def verify_kwargs(
     """
     if strict:
         for k in kwargs:
-            if not k in owner._args_names_flat:
+            if not k in owner._args_names_flat:  # type: ignore
                 raise TypeError(
                     f"Cannot set {owner.__name__}.{k}, attribute does "
                     "not exist."
@@ -138,7 +138,7 @@ class DeclListRow:
     It serves as a foundation for any classes that are meant to store assigned
     items along with any related metadata (variable names, visibility modifiers,
     mapping keys etc.)
-    
+
     Attributes
     ----------
     parent : DeclarationsList[Self]
@@ -182,8 +182,8 @@ class DeclListRow:
         Note
         ----
         You cannot pass mutually exclusive keys at once, for example, you cannot
-        pass ``namespace=...`` along with ``n=...`` to :meth:`ListRow.edit`, it
-        will raise an error.
+        pass ``namespace=...`` along with ``n=...`` to :meth:`ListRow.edit()
+        <DeclListRow.edit>`, it will raise an error.
 
         Parameters
         ----------
@@ -193,7 +193,8 @@ class DeclListRow:
             If set to ``True`` and kwargs contain a key that doesn't match any
             properties of this row then it will fail. If ``False`` then it will
             silently skip it.
-        
+            :ref:`More on why this exists <strict-attributes>`.
+
         Return
         ------
         Self
@@ -238,7 +239,7 @@ class DeclListRow:
 
     def as_dict(self):
         """Outputs given row in a form of a dict.
-        
+
         Warnings
         --------
         It does not perform copy for it's `value`, so avoid using it to copy a row
@@ -277,7 +278,7 @@ class DeclListRow:
 class ListRow(DeclListRow):
     """ListRow(parent, value, visibility = None, namespace = None)
     Row of data from a :class:`List` object.
-    
+
     Attributes
     ----------
     parent : List
@@ -329,7 +330,7 @@ class ListRow(DeclListRow):
 class MemberRow(DeclListRow):
     """MemberRow(parent, value, member = None, type = None, visibility = None, namespace = None)
     Row of data from :class:`Object` and :class:`Template` objects.
-    
+
     Attributes
     ----------
     parent : Object | Template
@@ -397,7 +398,7 @@ class MemberRow(DeclListRow):
 class ParamRow(DeclListRow):
     """ParamRow(parent, param = None, type = None, value = None)
     Row of data from a :class:`Params` object.
-    
+
     Attributes
     ----------
     parent : Params
@@ -449,7 +450,7 @@ class ParamRow(DeclListRow):
 class MapRow(DeclListRow):
     """MapRow(parent, key, value)
     Row of data from a :class:`Params` object.
-    
+
     Attributes
     ----------
     parent : MapRow
@@ -495,7 +496,7 @@ DeclListRow_co = tp.TypeVar(
 class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
     """Abstract class for list-like objects of this model. It is used to store
     rows that are subclasses of :class:`DeclListRow`.
-    
+
     Attributes
     ----------
     parent : DeclarationsList | None
@@ -521,7 +522,8 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
             If set to ``True`` and kwargs contain a key that doesn't match any
             properties of this row then it will fail. If ``False`` then it will
             silently skip it.
-        
+            :ref:`More on why this exists <strict-attributes>`.
+
         Examples
         --------
         >>> import ndf_parse as ndf
@@ -558,7 +560,7 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
     ) -> DeclListRow_co:
         """insert(index, _strict = True, **kwargs) -> DeclListRow
         Builds and inserts a new row from given arguments into a given place.
-        
+
         Same logic applies as in :meth:`add` method, just with addition of an
         index as first positional argument.
 
@@ -572,6 +574,7 @@ class DeclarationsList(tp.List[DeclListRow_co]):  # type: ignore
             If set to ``True`` and kwargs contain a key that doesn't match any
             properties of this row then it will fail. If ``False`` then it will
             silently skip it.
+            :ref:`More on why this exists <strict-attributes>`.
         """
         verify_kwargs(kwargs, self._row_type, _strict)
         result = self._row_type(

@@ -1,6 +1,12 @@
 ndf-parse
 =========
 
+.. |why_bother_img| image:: sphinx/pages/images/why_bother.png
+
+.. include-from-here
+
+|why_bother_img|
+
 This package allows to parse Eugen Systems ndf files, modify them and write back
 modified versions as a valid ndf code. It was created to allow easier editing of
 warno mods than what is currently available with game's own tools.

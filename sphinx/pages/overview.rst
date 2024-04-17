@@ -1,5 +1,7 @@
 Overview
 ========
 
+.. |why_bother_img| image:: images/why_bother.png
+
 .. include:: ../../README.rst
-   :start-line: 2
+   :start-after: include-from-here
