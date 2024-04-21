@@ -1,0 +1,1220 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="printer" href="../printer.html" /><link rel="prev" title="model" href="../model.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>abc - ndf-parse 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=c8f71b31" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #fdf6e3;
+  --color-code-foreground: #657b83;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #0d1117;
+  --color-code-foreground: #e6edf3;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #0d1117;
+  --color-code-foreground: #e6edf3;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">ndf-parse 0.2.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/ndf_parse_logo_blob.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/ndf_parse_logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">ndf-parse 0.2.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docs.html">Documentation</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../ndf-parse.html">ndf-parse (API Reference)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of ndf-parse (API Reference)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">abc</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../printer.html">printer</a></li>
+</ul>
+</li>
+</ul>
+
+</div></div>
+<div class="sidebar-tree">
+  <p><span class="caption-text">Versions</span></p>
+  <ul>
+      <li class="toctree-l1"><a style="padding-left:1rem" href="abc.html">
+        v0.2.0 <b>latest</b>
+    </a></li>
+      <li class="toctree-l1"><a style="padding-left:1rem" href="../../../v0.1.2/index.html">
+        v0.1.2
+    </a></li>
+  </ul>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-ndf_parse.model.abc">
+<span id="abc"></span><h1>abc<a class="headerlink" href="#module-ndf_parse.model.abc" title="Permalink to this heading">#</a></h1>
+<p>This module contains abstract classes used as a foundation for (almost) all
+ndf-related structures. Main building blocks are <a class="reference internal" href="#ndf_parse.model.abc.List" title="ndf_parse.model.abc.List"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a> and <a class="reference internal" href="#ndf_parse.model.abc.Row" title="ndf_parse.model.abc.Row"><code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code></a>.
+List is a list-like structure (but does not inherit directly from <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+for ease of distinguishing one from the other in checks) that holds Rows of an
+appropriate subtype. Actual concrete classes perform only minor overrides and
+add aliases for convenience and brevity.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_strict:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ndf_parse.model.abc.Row" title="Permalink to this definition">#</a></dt>
+<dd><p>An abstract class for rows of data in list-like structures of the model.</p>
+<p>It serves as a foundation for any classes that are meant to store assigned
+items along with any related metadata (variable names, visibility modifiers,
+mapping keys etc.)</p>
+<p>When printing out (via standard <a class="reference external" href="https://docs.python.org/3.8/library/functions.html#print" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code></a>, not
+<a class="reference internal" href="../printer.html#ndf_parse.printer.print" title="ndf_parse.printer.print"><code class="xref py py-func docutils literal notranslate"><span class="pre">ndf_parse.printer.print()</span></code></a>), a row gets printed as it’s class name
+followed by it’s index in the parent object. If row is not parented then
+it will have <code class="docutils literal notranslate"><span class="pre">[DANGLING]</span></code> instead of an index. Examples:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model</span> <span class="kn">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">MapRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">MapRow</span><span class="p">(</span><span class="s2">&quot;&#39;key&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span>
+<span class="go">MapRow[DANGLING](key=&quot;&#39;key&#39;&quot;, value=&#39;12&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Map</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="go">MapRow[0](key=&quot;&#39;key&#39;&quot;, value=&#39;12&#39;)</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a></em><a class="headerlink" href="#ndf_parse.model.abc.Row.index" title="Permalink to this definition">#</a></dt>
+<dd><p><em>(readonly)</em> – Returns an index of this row in it’s parent or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if dangling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#LookupError" title="(in Python v3.8)"><strong>LookupError</strong></a> – Errors out if has a parent but was not found in it (this should
+    never happen unless there is a serious bug in parent/unparent
+    routines or it was manually deleted from <code class="docutils literal notranslate"><span class="pre">List.__inner</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.List" title="ndf_parse.model.abc.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a></em><a class="headerlink" href="#ndf_parse.model.abc.Row.parent" title="Permalink to this definition">#</a></dt>
+<dd><p><em>(readonly)</em> – A List-like object to which this row belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.from_ndf">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ndf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#ndf_parse.model.abc.Row.from_ndf" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a row from an ndf code. The code must contain only one item
+corresponding to this row’s class. Example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model</span> <span class="kn">import</span> <span class="n">ListRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;export Value is 12&quot;</span><span class="p">)</span>
+<span class="go">ListRow[DANGLING](value=&#39;12&#39;, visibility=&#39;export&#39;, namespace=&#39;Value&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – An ndf code representing a single row.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – Errors out in case ndf code contains more than one object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#ndf_parse.model.abc.Row.copy" title="Permalink to this definition">#</a></dt>
+<dd><p>Performs a deep copy of a row. It’s an alias to a
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__deepcopy__()</span></code> method (shallow copying <a class="reference internal" href="../../docs.html#no-referencing"><span class="std std-ref">is disabled
+intentionally</span></a>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.compare">
+<span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#object" title="(in Python v3.8)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ndf_parse.model.abc.Row.compare" title="Permalink to this definition">#</a></dt>
+<dd><p>Compares 2 items. If <cite>existing_only</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code> (the default) then
+it acts as a pattern matcher, i.e. it compares only with existing rows
+in the second object, allowing to filter out objects with specific
+values. If <cite>existing_only</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> then acts as <cite>__eq__()</cite>.
+Examples:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model</span> <span class="kn">import</span> <span class="n">ListRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original_row</span> <span class="o">=</span> <span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;NewMember is Obj(inner_member = 12</span><span class="se">\n</span><span class="s2"> extra=5)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strict_match</span> <span class="o">=</span> <span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;NewMember is Obj(inner_member = 12</span><span class="se">\n</span><span class="s2"> extra=5)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">will_fail_01</span> <span class="o">=</span> <span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;Renamed is Obj(inner_member = 12</span><span class="se">\n</span><span class="s2"> extra=5)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">will_fail_02</span> <span class="o">=</span> <span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;NewMember is Obj(inner_member = 44</span><span class="se">\n</span><span class="s2"> extra=5)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#                                                       44 != 12 ^^</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pattern_01</span> <span class="o">=</span> <span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;NewMember is Obj()&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pattern_02</span> <span class="o">=</span> <span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;NewMember is Obj(inner_member = 12)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># strict compare example (`existing_only` is ``False``)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original_row</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">strict_match</span><span class="p">,</span> <span class="n">existing_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original_row</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">will_fail_01</span><span class="p">,</span> <span class="n">existing_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original_row</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">will_fail_02</span><span class="p">,</span> <span class="n">existing_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># pattern compare(`existing_only` is ``True``)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original_row</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">pattern_01</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">original_row</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">pattern_02</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be careful when <a class="reference internal" href="../../docs.html#comparing-strings"><span class="std std-ref">comparing strings</span></a>
+from ndf code. Embedded quotes must match.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<em>Self</em><em> | </em><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – object to compare against or to use as a pattern.</p></li>
+<li><p><strong>existing_only</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – Controls comparison mode between full comparison and pattern
+matching (default mode).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If items match or not.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.edit">
+<span class="sig-name descname"><span class="pre">edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">self</span></span></span><a class="headerlink" href="#ndf_parse.model.abc.Row.edit" title="Permalink to this definition">#</a></dt>
+<dd><p>Edit current row with multiple values (except <cite>parent</cite> and <cite>index</cite>).</p>
+<p>This method allows to edit a bunch of values in the row at once. It also
+accepts properties’ aliases or a dict of keys corresponding to Row’s
+properties/aliases (such as an output of <a class="reference internal" href="../../ndf-parse.html#ndf_parse.expression" title="ndf_parse.expression"><code class="xref py py-func docutils literal notranslate"><span class="pre">ndf_parse.expression()</span></code></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You cannot pass mutually exclusive keys at once, for example, you cannot
+pass <code class="docutils literal notranslate"><span class="pre">namespace=...</span></code> along with <code class="docutils literal notranslate"><span class="pre">n=...</span></code> to a <a class="reference internal" href="../model.html#ndf_parse.model.ListRow.edit" title="ndf_parse.model.ListRow.edit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ListRow.edit()</span></code></a>, it will raise an error.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kwargs</strong> (<a class="reference internal" href="#ndf_parse.model.abc.CellValue" title="ndf_parse.model.abc.CellValue"><code class="xref py py-data docutils literal notranslate"><span class="pre">CellValue</span></code></a> | None) – Properties to edit.</p></li>
+<li><p><strong>_strict</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> and kwargs contain a key that doesn’t match any
+properties of this row then it will fail. If <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will
+silently skip it.
+<a class="reference internal" href="../../docs.html#strict-attributes"><span class="std std-ref">More on why this exists</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – Errors out if gets repeating/clashing arguments/aliases or if in
+    strict mode and got unrecognized arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.edit_ndf">
+<span class="sig-name descname"><span class="pre">edit_ndf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">self</span></span></span><a class="headerlink" href="#ndf_parse.model.abc.Row.edit_ndf" title="Permalink to this definition">#</a></dt>
+<dd><p>Edit a row using ndf code. The code should contain an expression
+representing a single object of the same type as the row is, i.e. for
+<a class="reference internal" href="../model.html#ndf_parse.model.ListRow" title="ndf_parse.model.ListRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListRow</span></code></a> it would look like this:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model</span> <span class="kn">import</span> <span class="n">ListRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span><span class="o">.</span><span class="n">edit_ndf</span><span class="p">(</span><span class="s2">&quot;export NewName is 24&quot;</span><span class="p">)</span>
+<span class="go">ListRow[DANGLING](value=&#39;24&#39;, visibility=&#39;export&#39;, namespace=&#39;NewName&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If a value can be skipped it will remain unedited.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Main drawback is you can&#39;t ignore mandatory values for a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># specific sublass of Row.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span><span class="o">.</span><span class="n">edit_ndf</span><span class="p">(</span><span class="s2">&quot;NewValue is 12&quot;</span><span class="p">)</span>
+<span class="go">ListRow[DANGLING](value=&#39;12&#39;, visibility=&#39;export&#39;, namespace=&#39;NewValue&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># note that &#39;export&#39; didn&#39;t change</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Ndf code.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – Errors out in case the ndf code contains more than one object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Row.as_dict">
+<span class="sig-name descname"><span class="pre">as_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><span class="pre">dict</span></a></span></span><a class="headerlink" href="#ndf_parse.model.abc.Row.as_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Outputs given row in a form of a dict.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It does not perform copy for it’s <cite>value</cite>. If you edit <cite>value</cite> key in
+the dict, it will be also edited in the original row (they literally
+point to the same object in memory). Creating a new row from such dict
+via decomposition (<code class="code highlight py docutils literal highlight-py"><span class="n">new_row</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ListRow</span><span class="p">(</span>
+<span class="o">**</span><span class="n">old_row</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span> <span class="p">)</span></code>) is fine as long as source is parented to
+something. If it is a dangling row then you WILL get 2 rows referencing
+the same data in memory (because of specific optimizations aimed at
+avoiding excessive data copying on row moves) and will have unexpected
+side effects! Copying using <a class="reference internal" href="#ndf_parse.model.abc.Row.copy" title="ndf_parse.model.abc.Row.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Row.copy()</span></code></a> is recommended in most
+cases. It’s easier and guarantees no such side effects.</p>
+<p><a class="reference internal" href="../../docs.html#no-referencing"><span class="std std-ref">See notes on copying here.</span></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a>[<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, <a class="reference internal" href="#ndf_parse.model.abc.CellValue" title="ndf_parse.model.abc.CellValue">CellValue</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">List</span></span><a class="headerlink" href="#ndf_parse.model.abc.List" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.8/library/typing.html#typing.Sequence" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GR</span></code></a>]</p>
+<p>An abstract class for list-likes of the model.</p>
+<p>It serves as a foundation for any classes that are meant to store repeating
+structures of data (rows as they are called in this package). In many
+respects it acts as a <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> but does not inherit from it because
+some APIs differ a bit plus it helps to filter one against the other in type
+checks.</p>
+<p>This class implements basic attribute getters and setters along with named
+methods for same actions but with return values and more explicit usage:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Pythonic way</p></th>
+<th class="head"><p>Explicit methods</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ndf code&quot;</span></code></p></td>
+<td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;ndf code&quot;</span><span class="p">)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ndf code&quot;</span></code></p></td>
+<td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="s2">&quot;ndf code&quot;</span><span class="p">)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;nbf code&quot;</span></code></p></td>
+<td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;ndf_code&quot;</span><span class="p">)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">):]</span> <span class="o">=</span> <span class="s2">&quot;ndf code&quot;</span></code></p></td>
+<td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;ndf_code&quot;</span><span class="p">)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="code highlight py docutils literal highlight-py"><span class="k">del</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></code></p></td>
+<td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="code highlight py docutils literal highlight-py"><span class="k">del</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]</span></code></p></td>
+<td><p><code class="code highlight py docutils literal highlight-py"><span class="n">lst</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Explicit methods are advised in most cases because they are - well -
+explicit, have a return value and allow for <a class="reference internal" href="../../docs.html#strict-attributes"><span class="std std-ref">strictness manipulation</span></a>, while pythonic ones are in strict mode by default. But
+you can use pythonic ones for brevity, just be aware of these nuances.</p>
+<p>Some examples of pythonic setters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">ListRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">row</span>  <span class="c1"># replace all (but list is empty so just insert)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Before is 24&quot;</span>  <span class="c1"># insert at index 0, string is treated as ndf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;After is 42, After2 is 69&quot;</span>  <span class="c1"># can also insert multiple</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
+<span class="go">List[ListRow[0](value=&#39;24&#39;, visibility=None, namespace=&#39;Before&#39;),</span>
+<span class="go">ListRow[1](value=&#39;42&#39;, visibility=None, namespace=&#39;After&#39;),</span>
+<span class="go">ListRow[2](value=&#39;69&#39;, visibility=None, namespace=&#39;After2&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Replace is 25&quot;</span>  <span class="c1"># replace a given row</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">lst</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># delete last row</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
+<span class="go">List[ListRow[0](value=&#39;24&#39;, visibility=None, namespace=&#39;Before&#39;),</span>
+<span class="go">ListRow[1](value=&#39;25&#39;, visibility=None, namespace=&#39;Replace&#39;)]</span>
+</pre></div>
+</div>
+<p>List supports the following operations over sequences:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>  <span class="c1"># get it&#39;s length</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>  <span class="c1"># iterate over a List</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
+<span class="go">24</span>
+<span class="go">25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>  <span class="c1"># iterate over a reversed list</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
+<span class="go">25</span>
+<span class="go">24</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">==</span> <span class="s2">&quot;Before is 24, Replace is 25&quot;</span>  <span class="c1"># compare with an iterable</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For the moment <a class="reference internal" href="#ndf_parse.model.abc.List" title="ndf_parse.model.abc.List"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.List</span></code></a> does not implement all methods From
+<a class="reference external" href="https://docs.python.org/3.8/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>. <code class="xref py py-meth docutils literal notranslate"><span class="pre">index()</span></code> is not implemented
+because each row has such property itself and <code class="xref py py-meth docutils literal notranslate"><span class="pre">count()</span></code> is not
+implemented because there is no much use for it with current implementation.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.List" title="ndf_parse.model.abc.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.Row" title="ndf_parse.model.abc.Row"><span class="pre">Row</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a></em><a class="headerlink" href="#ndf_parse.model.abc.List.parent" title="Permalink to this definition">#</a></dt>
+<dd><p><strong>(readonly)</strong> A parent list to which this list belongs. Example:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">BigList</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">ListOfObjs</span><span class="p">(</span>
+<span class="w">    </span><span class="n">first_obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FirstObj</span><span class="p">(</span><span class="s">&quot;I&#39;m first&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Getting <code class="docutils literal notranslate"><span class="pre">parent</span></code> for <cite>FirstObj</cite> would return <cite>ListOfObjs</cite>, not the row
+it’s stored in.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.parent_row">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_row</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.Row" title="ndf_parse.model.abc.Row"><span class="pre">Row</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a></em><a class="headerlink" href="#ndf_parse.model.abc.List.parent_row" title="Permalink to this definition">#</a></dt>
+<dd><p><strong>(readonly)</strong> A row to which this list belongs. In the example above
+getting <code class="docutils literal notranslate"><span class="pre">parent_row</span></code> for <cite>FirstObj</cite> would not return the <cite>ListOfObjs</cite>
+but a <code class="docutils literal notranslate"><span class="pre">MemberRow[0](value=Object[...],</span> <span class="pre">member='first_obj',</span> <span class="pre">...</span> <span class="pre">)</span></code>
+where <cite>value</cite> is the <cite>FirstObj</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.add" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a row/rows to the list. <cite>input</cite> is an ndf code snippet. If the
+snippet contains one item then the method will return one created row.
+Else it will return a list of created rows.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Value is 12, Second is 24&quot;</span><span class="p">)</span>
+<span class="go">[ListRow[2](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[3](value=&#39;24&#39;, visibility=None, namespace=&#39;Second&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Extra is 42&quot;</span><span class="p">)</span>
+<span class="go">ListRow[4](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An added row/rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></span></dt>
+<dd><p>Add a row to the list. <cite>input</cite> is an existing row or a dict
+representation of a row. If existing row is dangling then it is parented
+directly. If it has a parent - it’s copy is added.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">({</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;12&quot;</span><span class="p">})</span>
+<span class="go">ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An added row.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Add rows to the list. <cite>input</cite> is a single iterable containing a set of
+row representations. Multiple iterables and nested iterables are not
+supported due to severe ambiguity (and lack of meaningful usecases).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span> <span class="s2">&quot;Extra is 42&quot;</span> <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[6](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[7](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[8](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># but examples below will fail</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;This is &#39;a fail&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;or is it&quot;</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;WellNowIt is &#39;2 iterables won&#39;t work&#39;&quot;</span><span class="p">,</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;no, seriously&quot;</span><span class="p">)</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;I mean it&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">TypeError</span>: <span class="n">Got unsupported type of row: list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;Value is 12&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;This is &#39;where it fails&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;TrustMeThis is &#39;a nested iterable&#39;&quot;</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">TypeError</span>: <span class="n">Got unsupported type of row: list</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Added rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Same as previous override but in a decomposed form.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[9](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[10](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[11](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Added rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.insert" title="Permalink to this definition">#</a></dt>
+<dd><p>Insert a row/rows into the list. <cite>key</cite> is an index at which to insert a
+new row/rows. <cite>input</cite> is an ndf code snippet. If the snippet contains
+one item then the method will return one created row. Else it will
+return a list of created rows.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Value is 12, Second is 24&quot;</span><span class="p">)</span>
+<span class="go">[ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[6](value=&#39;24&#39;, visibility=None, namespace=&#39;Second&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Extra is 42&quot;</span><span class="p">)</span>
+<span class="go">ListRow[5](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An inserted row/rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></span></dt>
+<dd><p>Insert a row into the list. <cite>key</cite> is an index at which to insert a new
+row. <cite>input</cite> is an existing row or a dict representation of a row.
+If existing row is dangling then it is parented directly. If it has a
+parent - it’s copy is added.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;FromDict&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;69&quot;</span><span class="p">})</span>
+<span class="go">ListRow[5](value=&#39;69&#39;, visibility=None, namespace=&#39;FromDict&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An inserted row.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Insert rows into the list. <cite>key</cite> is an index at which to insert new
+rows. <cite>input</cite> is a single iterable containing a set of row
+representations. Multiple iterables and nested iterables are not
+supported due to severe ambiguity (and lack of meaningful usecases).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span> <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[6](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[7](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># but examples below will fail</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;This is &#39;a fail&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;or is it&quot;</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;WellNowIt is &#39;2 iterables won&#39;t work&#39;&quot;</span><span class="p">,</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;no, seriously&quot;</span><span class="p">)</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;I mean it&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">TypeError</span>: <span class="n">Got unsupported type of row: list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;Value is 12&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;This is &#39;where it fails&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;TrustMeThis is &#39;a nested iterable&#39;&quot;</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">TypeError</span>: <span class="n">Got unsupported type of row: list</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Inserted rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Same as previous override but in a decomposed form.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[6](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[7](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Inserted rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#slice" title="(in Python v3.8)"><span class="pre">slice</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.replace" title="Permalink to this definition">#</a></dt>
+<dd><p>Replace a row/rows in the list. <cite>key</cite> is an index or slice marking which
+row/rows to replace. <cite>input</cite> is an ndf code snippet. If the snippet
+contains one item then the method will return one created row. Else it
+will return a list of created rows.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace one with one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Value is 12&quot;</span><span class="p">)</span>
+<span class="go">ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># if you want to replace 1 item with multiple then make it explicit with a slice</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Value is 12, Second is 24&quot;</span><span class="p">)</span> <span class="c1"># this will fail</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">ValueError</span>: <span class="n">Cannot replace single item List[5] with multiple ones.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace index 5, note non-inclusive upper bound 6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s2">&quot;Value is 12, Second is 24&quot;</span><span class="p">)</span>
+<span class="go">[ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[6](value=&#39;24&#39;, visibility=None, namespace=&#39;Second&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace many with one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="s2">&quot;Value is 12&quot;</span><span class="p">)</span>
+<span class="go">ListRow[1](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An inserted row/rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#slice" title="(in Python v3.8)"><span class="pre">slice</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></span></dt>
+<dd><p>Replace row/rows in the list. <cite>key</cite> is an index or slice marking which
+row to replace. <cite>input</cite> is an existing row or a dict representation
+of a row. If existing row is dangling then it is parented directly. If
+it has a parent - it’s copy is added.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace one with one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;12&quot;</span><span class="p">})</span>
+<span class="go">ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace many with one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;12&quot;</span><span class="p">})</span>
+<span class="go">ListRow[1](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An inserted row.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#slice" title="(in Python v3.8)"><span class="pre">slice</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Replace row/rows in the list. <cite>key</cite> is an index at which to insert new
+rows. <cite>input</cite> is a single iterable containing a set of row
+representations. Multiple iterables and nested iterables are not
+supported due to severe ambiguity (and lack of meaningful usecases).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace one with many</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span> <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[6](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[7](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace many with many (`len(added)` vs `len(removed)` don&#39;t have to match)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span> <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[1](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[2](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[3](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># but examples below will fail</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;This is &#39;a fail&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;or is it&quot;</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">[</span> <span class="s2">&quot;WellNowIt is &#39;2 iterables won&#39;t work&#39;&quot;</span><span class="p">,</span> <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;no, seriously&quot;</span><span class="p">)</span> <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;I mean it&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">TypeError</span>: <span class="n">Got unsupported type of row: list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="s2">&quot;Value is 12&quot;</span><span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;This is &#39;where it fails&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;TrustMeThis is &#39;a nested iterable&#39;&quot;</span> <span class="p">],</span> <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">TypeError</span>: <span class="n">Got unsupported type of row: list</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Inserted rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#slice" title="(in Python v3.8)"><span class="pre">slice</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Same as previous override but in a decomposed form.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace one with many</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[5](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[6](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[7](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># replace many with many (`len(added)` vs `len(removed)` don&#39;t have to match)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">ListRow</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;24&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;Extra is 42&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[ListRow[1](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[2](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[3](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Inserted rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.remove" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove a row. <cite>key</cite> is an indexable value that controls which rows to
+remove. Contrary to <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">row[int]</span></code> this method returns back a removed
+dangling row.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">ListRow[DANGLING](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Removed row.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#slice" title="(in Python v3.8)"><span class="pre">slice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Remove rows. <cite>key</cite> is a slice that controls which rows to remove.
+Contrary to <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">row[slice]</span></code> this method returns back removed
+dangling rows.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="go">[ListRow[DANGLING](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[DANGLING](value=&#39;24&#39;, visibility=None, namespace=&#39;Other&#39;),</span>
+<span class="go">ListRow[DANGLING](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;),</span>
+<span class="go">ListRow[DANGLING](value=&#39;12&#39;, visibility=None, namespace=&#39;Value&#39;),</span>
+<span class="go">ListRow[DANGLING](value=&#39;42&#39;, visibility=None, namespace=&#39;Extra&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># note that it does not fail if list-like doesn&#39;t have enough values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># for the slice, it returns as much as it can find.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Removed rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.match_pattern">
+<span class="sig-name descname"><span class="pre">match_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><span class="pre">DictWrapped</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.match_pattern" title="Permalink to this definition">#</a></dt>
+<dd><p>Return each row that matches a given pattern.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ndf_parse</span> <span class="k">as</span> <span class="nn">ndf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">List</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;A is Weapon(name=&#39;Steur AUG&#39;</span><span class="se">\n</span><span class="s2"> caliber = 5.56), </span><span class="se">\</span>
+<span class="gp">... </span><span class="s2">B is Weapon(name=&#39;FN SCAR-H&#39;</span><span class="se">\n</span><span class="s2"> caliber = 7.62), </span><span class="se">\</span>
+<span class="gp">... </span><span class="s2">C is Weapon(name=&#39;M16&#39;</span><span class="se">\n</span><span class="s2"> caliber = 5.56), </span><span class="se">\</span>
+<span class="gp">... </span><span class="s2">D is Weapon(name=&#39;Steur Scout&#39;</span><span class="se">\n</span><span class="s2"> caliber = 7.62), </span><span class="se">\</span>
+<span class="gp">... </span><span class="s2">E is Weapon(name=&#39;AK-108&#39;</span><span class="se">\n</span><span class="s2"> caliber = 5.56)&quot;</span><span class="p">)</span>
+<span class="go">[ListRow[0](...)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">lst</span><span class="o">.</span><span class="n">match_pattern</span><span class="p">(</span><span class="s2">&quot;Weapon(caliber = 5.56)&quot;</span><span class="p">):</span> <span class="n">ndf</span><span class="o">.</span><span class="n">printer</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="go">A is Weapon</span>
+<span class="go">(</span>
+<span class="go">    name = &#39;Steur AUG&#39;</span>
+<span class="go">    caliber = 5.56</span>
+<span class="go">)</span>
+<span class="go">C is Weapon</span>
+<span class="go">(</span>
+<span class="go">    name = &#39;M16&#39;</span>
+<span class="go">    caliber = 5.56</span>
+<span class="go">)</span>
+<span class="go">E is Weapon</span>
+<span class="go">(</span>
+<span class="go">    name = &#39;AK-108&#39;</span>
+<span class="go">    caliber = 5.56</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> | </em><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><em>GR</em></a><em> | </em><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped" title="ndf_parse.model.abc.DictWrapped"><em>DictWrapped</em></a>) – A pattern to match against. Can be a row, a dict, a string with ndf
+code.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>GR</em> – Rows from this List that match the pattern.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – Errors out if got multiple patterns to match against.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.find_by_cond">
+<span class="sig-name descname"><span class="pre">find_by_cond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.find_by_cond" title="Permalink to this definition">#</a></dt>
+<dd><p>Find a row by a condition. The condition is a function that returns
+<code class="docutils literal notranslate"><span class="pre">True</span></code> if a row satisfies all requirements. Always returns the first
+row that matches. Examples:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ndf_parse</span> <span class="k">as</span> <span class="nn">ndf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scene</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;A is 12</span><span class="se">\n</span><span class="s2">B is 24</span><span class="se">\n</span><span class="s2">C is 24</span><span class="se">\n</span><span class="s2">C is 42&quot;</span><span class="p">)</span>  <span class="c1"># note 2 values `24`</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scene</span><span class="o">.</span><span class="n">find_by_cond</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;24&#39;</span><span class="p">)</span>
+<span class="go">ListRow[1](value=&#39;24&#39;, visibility=None, namespace=&#39;B&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># first row matching the condition was returned</span>
+</pre></div>
+</div>
+<p>This example is intentionally simple, but this method has it’s use like
+catching a descriptor of specific type in a list of descriptors with no
+namespaces (Unit’s module descriptors are a good example).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition</strong> (<em>callable</em><em>[</em><em>[</em><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><em>GR</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – A function or a lambda that
+checks each row.</p></li>
+<li><p><strong>strict</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If strict and now row found then
+raises an error. Else returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – Errors out if in strict mode and no matching row as
+found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.compare">
+<span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#object" title="(in Python v3.8)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.compare" title="Permalink to this definition">#</a></dt>
+<dd><p>Compare a List against another iterable (except <cite>str</cite> and <cite>bytes</cite>).
+If <cite>existing_only</cite> is True then seek a 1-to-1 match. Else <cite>other</cite> acts
+as a pattern that must be present inside the List being compared.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">ListRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lit</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lit</span><span class="p">[:]</span> <span class="o">=</span> <span class="s2">&quot;Value is 12, Other is 24, Nested is Obj(the_one = 42</span><span class="se">\n</span><span class="s2"> unneeded = &#39;whatever&#39;)&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># strict compare</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># `compare()` accepts list-likes, lists or rows and strings as code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lit</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="s2">&quot;Value is 12, Other is 24&quot;</span><span class="p">,</span> <span class="n">existing_only</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># pattern compare</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lit</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="s2">&quot;Value is 12, Other is 24&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># we can even compare mested patterns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lit</span><span class="o">.</span><span class="n">compare</span><span class="p">([</span><span class="n">ListRow</span><span class="o">.</span><span class="n">from_ndf</span><span class="p">(</span><span class="s2">&quot;Nested is Obj(the_one = 42)&quot;</span><span class="p">)])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – Object to compare against or to use as a pattern.</p></li>
+<li><p><strong>existing_only</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – Controls comparison mode between full comparison and pattern
+matching (default mode).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If items match or not.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.copy" title="Permalink to this definition">#</a></dt>
+<dd><p>Performs a deep copy of a list. It’s an alias to a
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">__deepcopy__()</span></code> method (shallow copying <a class="reference internal" href="../../docs.html#no-referencing"><span class="std std-ref">is disabled
+intentionally</span></a>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.List.inner">
+<span class="sig-name descname"><span class="pre">inner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR"><span class="pre">GR</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ndf_parse.model.abc.List.inner" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns internal list containing all rows.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Insertions and edits on
+this list do not perform any checks nor reparentings on rows. It is
+completely possible to reference the same row twice or make a recursive
+structure. 99% of the time you shouldn’t access this list.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="#ndf_parse.model.abc.GR" title="ndf_parse.model.abc.GR">GR</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.is_pair">
+<span class="sig-name descname"><span class="pre">is_pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ndf_parse.model.abc.is_pair" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks if given item is a tulpe with 2 items inside.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ndf_parse.model.abc</span> <span class="kn">import</span> <span class="n">is_pair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_pair</span><span class="p">((</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_pair</span><span class="p">((</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;EXTRA&#39;</span><span class="p">))</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_pair</span><span class="p">([</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="typing">
+<h2>Typing<a class="headerlink" href="#typing" title="Permalink to this heading">#</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.Pair">
+<span class="sig-name descname"><span class="pre">Pair</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span> <span class="pre">alias</span></em><a class="headerlink" href="#ndf_parse.model.abc.Pair" title="Permalink to this definition">#</a></dt>
+<dd><p>A tuple with 2 values inside: <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#ndf_parse.model.abc.CellValue" title="ndf_parse.model.abc.CellValue"><code class="xref py py-data docutils literal notranslate"><span class="pre">CellValue</span></code></a>, <a class="reference internal" href="#ndf_parse.model.abc.CellValue" title="ndf_parse.model.abc.CellValue"><code class="xref py py-data docutils literal notranslate"><span class="pre">CellValue</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.CellValue">
+<span class="sig-name descname"><span class="pre">CellValue</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span> <span class="pre">alias</span></em><a class="headerlink" href="#ndf_parse.model.abc.CellValue" title="Permalink to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="../model.html#ndf_parse.model.List" title="ndf_parse.model.List"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.List</span></code></a> |
+<a class="reference internal" href="../model.html#ndf_parse.model.Object" title="ndf_parse.model.Object"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Object</span></code></a> |
+<a class="reference internal" href="../model.html#ndf_parse.model.Template" title="ndf_parse.model.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Template</span></code></a> |
+<a class="reference internal" href="../model.html#ndf_parse.model.Map" title="ndf_parse.model.Map"><code class="xref py py-class docutils literal notranslate"><span class="pre">model.Map</span></code></a> |
+<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference internal" href="#ndf_parse.model.abc.Pair" title="ndf_parse.model.abc.Pair"><code class="xref py py-data docutils literal notranslate"><span class="pre">Pair</span></code></a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.GR">
+<span class="sig-name descname"><span class="pre">GR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span> <span class="pre">alias</span></em><a class="headerlink" href="#ndf_parse.model.abc.GR" title="Permalink to this definition">#</a></dt>
+<dd><p>A Generic Row (a subclass of <a class="reference internal" href="#ndf_parse.model.abc.Row" title="ndf_parse.model.abc.Row"><code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="ndf_parse.model.abc.DictWrapped">
+<span class="sig-name descname"><span class="pre">DictWrapped</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span> <span class="pre">alias</span></em><a class="headerlink" href="#ndf_parse.model.abc.DictWrapped" title="Permalink to this definition">#</a></dt>
+<dd><p>A dictionary representation of a row: <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="#ndf_parse.model.abc.CellValue" title="ndf_parse.model.abc.CellValue"><code class="xref py py-data docutils literal notranslate"><span class="pre">CellValue</span></code></a>]</p>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../printer.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">printer</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../model.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">model</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; Ulibos, 2023-2024
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">abc</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a><ul>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row"><code class="docutils literal notranslate"><span class="pre">Row</span></code></a><ul>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.index"><code class="docutils literal notranslate"><span class="pre">Row.index</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.parent"><code class="docutils literal notranslate"><span class="pre">Row.parent</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.from_ndf"><code class="docutils literal notranslate"><span class="pre">Row.from_ndf()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.copy"><code class="docutils literal notranslate"><span class="pre">Row.copy()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.compare"><code class="docutils literal notranslate"><span class="pre">Row.compare()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.edit"><code class="docutils literal notranslate"><span class="pre">Row.edit()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.edit_ndf"><code class="docutils literal notranslate"><span class="pre">Row.edit_ndf()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Row.as_dict"><code class="docutils literal notranslate"><span class="pre">Row.as_dict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List"><code class="docutils literal notranslate"><span class="pre">List</span></code></a><ul>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.parent"><code class="docutils literal notranslate"><span class="pre">List.parent</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.parent_row"><code class="docutils literal notranslate"><span class="pre">List.parent_row</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.add"><code class="docutils literal notranslate"><span class="pre">List.add()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.insert"><code class="docutils literal notranslate"><span class="pre">List.insert()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.replace"><code class="docutils literal notranslate"><span class="pre">List.replace()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.remove"><code class="docutils literal notranslate"><span class="pre">List.remove()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.match_pattern"><code class="docutils literal notranslate"><span class="pre">List.match_pattern()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.find_by_cond"><code class="docutils literal notranslate"><span class="pre">List.find_by_cond()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.compare"><code class="docutils literal notranslate"><span class="pre">List.compare()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.copy"><code class="docutils literal notranslate"><span class="pre">List.copy()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.List.inner"><code class="docutils literal notranslate"><span class="pre">List.inner()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li><a class="reference internal" href="#ndf_parse.model.abc.is_pair"><code class="docutils literal notranslate"><span class="pre">is_pair()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#typing">Typing</a><ul>
+<li><a class="reference internal" href="#ndf_parse.model.abc.Pair"><code class="docutils literal notranslate"><span class="pre">Pair</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.CellValue"><code class="docutils literal notranslate"><span class="pre">CellValue</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.GR"><code class="docutils literal notranslate"><span class="pre">GR</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.model.abc.DictWrapped"><code class="docutils literal notranslate"><span class="pre">DictWrapped</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=63c56aed"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

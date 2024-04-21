@@ -1,0 +1,656 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="model" href="model.html" /><link rel="prev" title="API Reference" href="../reference.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>ndf-parse - ndf-parse 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=c8f71b31" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #fdf6e3;
+  --color-code-foreground: #657b83;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #0d1117;
+  --color-code-foreground: #e6edf3;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #0d1117;
+  --color-code-foreground: #e6edf3;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">ndf-parse 0.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/ndf_parse_logo_blob.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/ndf_parse_logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">ndf-parse 0.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs.html">Documentation</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../reference.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">ndf-parse</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of ndf-parse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="model.html">model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="printer.html">printer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div></div>
+<div class="sidebar-tree">
+  <p><span class="caption-text">Versions</span></p>
+  <ul>
+      <li class="toctree-l1"><a style="padding-left:1rem" href="../../../v0.2.0/index.html">
+        v0.2.0 <b>latest</b>
+    </a></li>
+      <li class="toctree-l1"><a style="padding-left:1rem" href="init.html">
+        v0.1.2
+    </a></li>
+  </ul>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="ndf-parse">
+<h1>ndf-parse<a class="headerlink" href="#ndf-parse" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Submodules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="model.html">model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printer.html">printer</a></li>
+</ul>
+</div>
+<span class="target" id="module-ndf_parse"></span><p>This package is designed for prcessing Eugen Systems ndf files. It allows for
+easier code manipulations than out-of-the-box differ for Eugen mods.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ndf_parse.Edit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><span class="pre">List</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ndf_parse.Edit" title="Permalink to this definition">#</a></dt>
+<dd><p>Holds data about currently edited file.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Edit.tree">
+<span class="sig-name descname"><span class="pre">tree</span></span><a class="headerlink" href="#ndf_parse.Edit.tree" title="Permalink to this definition">#</a></dt>
+<dd><p>Model of a currently edited tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#ndf_parse.model.CellValue" title="ndf_parse.model.CellValue"><code class="xref py py-data docutils literal notranslate"><span class="pre">CellValue</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Edit.file_path">
+<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#ndf_parse.Edit.file_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Relative path to a destination file. Path should be relative to a mod
+root, i.e. <code class="docutils literal notranslate"><span class="pre">GameData/Generated/...</span></code>, <a class="reference internal" href="../docs.html#path-relativeness"><span class="std std-ref">more on that here</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Edit.save">
+<span class="sig-name descname"><span class="pre">save</span></span><a class="headerlink" href="#ndf_parse.Edit.save" title="Permalink to this definition">#</a></dt>
+<dd><p>Whether to write out the file after edits are done or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ndf_parse.Mod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod_dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ndf_parse.Mod" title="Permalink to this definition">#</a></dt>
+<dd><p>This class holds links to source and destination mods. It also holds
+methods and wrappers designed to streamline editing, mainly the
+<a class="reference internal" href="#ndf_parse.Mod.edit" title="ndf_parse.Mod.edit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">edit()</span></code></a> method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Mod.mod_src">
+<span class="sig-name descname"><span class="pre">mod_src</span></span><a class="headerlink" href="#ndf_parse.Mod.mod_src" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to an unedited source mod. Can be relative to CWD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Mod.mod_dst">
+<span class="sig-name descname"><span class="pre">mod_dst</span></span><a class="headerlink" href="#ndf_parse.Mod.mod_dst" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to a generated destination mod. Can be relative to CWD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Mod.edits">
+<span class="sig-name descname"><span class="pre">edits</span></span><a class="headerlink" href="#ndf_parse.Mod.edits" title="Permalink to this definition">#</a></dt>
+<dd><p>List of current edits. It tracks nested <a class="reference internal" href="#ndf_parse.Mod.edit" title="ndf_parse.Mod.edit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">edit()</span></code></a> calls and should
+not be edited by hand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="#ndf_parse.Edit" title="ndf_parse.Edit">Edit</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ndf_parse.Mod.current_edit">
+<span class="sig-name descname"><span class="pre">current_edit</span></span><a class="headerlink" href="#ndf_parse.Mod.current_edit" title="Permalink to this definition">#</a></dt>
+<dd><p>Currently active edit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ndf_parse.Edit" title="ndf_parse.Edit">Edit</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Paths are relative to an execution path,
+<a class="reference internal" href="../docs.html#path-relativeness"><span class="std std-ref">more on that here</span></a>.</p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ndf_parse</span> <span class="k">as</span> <span class="nn">ndf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mod</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">Mod</span><span class="p">(</span><span class="s1">&#39;path/to/unedited/mod&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/generated/mod&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">mod</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="s1">&#39;GameData/path/to/file.ndf&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="o">...</span>  <span class="c1"># edits to the source</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># at the end of `with` file gets automatically written out</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.Mod.edit">
+<span class="sig-name descname"><span class="pre">edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_no_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ndf_parse.Mod" title="ndf_parse.Mod"><span class="pre">Mod</span></a></span></span><a class="headerlink" href="#ndf_parse.Mod.edit" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a new edit. It is designed to work with <code class="docutils literal notranslate"><span class="pre">with</span></code> clause.
+Avoid using it outside of the <code class="docutils literal notranslate"><span class="pre">with</span></code> unless you know what you are
+doing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – File to be edited. Path should be relative to a mod root, i.e.
+<code class="docutils literal notranslate"><span class="pre">GameData/Generated/...</span></code>, <a class="reference internal" href="../docs.html#path-relativeness"><span class="std std-ref">more on that here</span></a>.</p></li>
+<li><p><strong>save</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True then file gets written out at the end of the <code class="docutils literal notranslate"><span class="pre">with</span></code>
+statement.</p></li>
+<li><p><strong>ensure_no_errors</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – Ensures that original ndf code has no syntax errors. Fails if there
+are any and this parameter is True. Be mindful of
+<a class="reference internal" href="../docs.html#checking-strictness"><span class="std std-ref">checking strictness</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns it’s parent <a class="reference internal" href="#ndf_parse.Mod" title="ndf_parse.Mod"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod</span></code></a> object. Required for <code class="docutils literal notranslate"><span class="pre">with</span></code>
+statement to work correctly.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ndf_parse.Mod" title="ndf_parse.Mod">Mod</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.Mod.check_if_src_is_newer">
+<span class="sig-name descname"><span class="pre">check_if_src_is_newer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ndf_parse.Mod.check_if_src_is_newer" title="Permalink to this definition">#</a></dt>
+<dd><p>Nukes the destination mod and recreates a pristine copy of the
+destination mod if the source mod is newer (if modification date of the
+source is newer than of the destination).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the destination mod was rebuilt.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.Mod.update_dst">
+<span class="sig-name descname"><span class="pre">update_dst</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ndf_parse.Mod.update_dst" title="Permalink to this definition">#</a></dt>
+<dd><p>Forcefully rebuilds a clean version of the destination mod, no checks
+performed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.Mod.parse_src">
+<span class="sig-name descname"><span class="pre">parse_src</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_no_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><span class="pre">List</span></a></span></span><a class="headerlink" href="#ndf_parse.Mod.parse_src" title="Permalink to this definition">#</a></dt>
+<dd><p>Parses a file from a source mod.</p>
+<p>This function does not write any modified data back to a destination
+file. It’s merely a convenience function for retrieving another mod file
+model to fetch some data without risking to write any modifications back
+out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Relative path to a source file. Path should be relative to a mod
+root, i.e. <code class="docutils literal notranslate"><span class="pre">GameData/Generated/...</span></code>, <a class="reference internal" href="../docs.html#path-relativeness"><span class="std std-ref">more on that here</span></a>.</p></li>
+<li><p><strong>ensure_no_errors</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – If on then fails in case there are any syntactic errors in the
+ndf code. Be mindful of <a class="reference internal" href="../docs.html#checking-strictness"><span class="std std-ref">checking strictness</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Model representation of the source mod file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><em>List</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ndf_parse</span> <span class="k">as</span> <span class="nn">ndf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mod</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">Mod</span><span class="p">(</span><span class="s1">&#39;path/to/unedited/mod&#39;</span><span class="p">,</span> <span class="s1">&#39;path/to/generated/mod&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">mod</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="s1">&#39;GameData/path/to/units_file.ndf&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">units</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c1"># This is a pseudocode, it does not match an actual mod</span>
+<span class="gp">... </span>    <span class="c1"># structure, it&#39;s intended to only show a possible use case.</span>
+<span class="gp">... </span>    <span class="c1"># We up the speed for any unit that has a 155mm weapon.</span>
+<span class="gp">... </span>    <span class="n">weapons</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">parse_src</span><span class="p">(</span><span class="s1">&#39;GameData/path/to/weapons_file.ndf&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">unit_row</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">weapon_class</span> <span class="o">=</span> <span class="n">unit_row</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">by_member</span><span class="p">(</span><span class="s1">&#39;WeaponClass&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+<span class="gp">... </span>        <span class="n">weapon_row</span> <span class="o">=</span> <span class="n">weapons</span><span class="o">.</span><span class="n">by_namespace</span><span class="p">(</span><span class="n">weapon_class</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">weapon_row</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">by_member</span><span class="p">(</span><span class="s1">&#39;Caliber&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;155&#39;</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">unit</span> <span class="o">=</span> <span class="n">unit_row</span><span class="o">.</span><span class="n">value</span>
+<span class="gp">... </span>            <span class="n">speed_row</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">by_member</span><span class="p">(</span><span class="s1">&#39;Speed&#39;</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="n">speed_row</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="s1">&#39; * 2&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ndf_parse.Mod.parse_dst">
+<span class="sig-name descname"><span class="pre">parse_dst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_no_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><span class="pre">List</span></a></span></span><a class="headerlink" href="#ndf_parse.Mod.parse_dst" title="Permalink to this definition">#</a></dt>
+<dd><p>Parses a file from a destination mod.</p>
+<p>This function is identical to <a class="reference internal" href="#ndf_parse.Mod.parse_src" title="ndf_parse.Mod.parse_src"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_src()</span></code></a> in it’s functionality
+and intent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Relative path to a destination file. Path should be relative to a
+mod root, i.e. <code class="docutils literal notranslate"><span class="pre">GameData/Generated/...</span></code>, <a class="reference internal" href="../docs.html#path-relativeness"><span class="std std-ref">more on that here</span></a>.</p></li>
+<li><p><strong>ensure_no_errors</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – If on then fails in case there are any syntactic errors in the
+ndf code. Be mindful of <a class="reference internal" href="../docs.html#checking-strictness"><span class="std std-ref">checking strictness</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Model representation of the source mod file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><em>List</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ndf_parse.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnyStr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_no_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><span class="pre">List</span></a></span></span><a class="headerlink" href="#ndf_parse.convert" title="Permalink to this definition">#</a></dt>
+<dd><p>Converts <cite>string</cite>/<cite>byte</cite> data to a <a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a> object.
+Should be used to parse ndf files as a whole.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>AnyStr</em>) – ndf code to parse.</p></li>
+<li><p><strong>ensure_no_errors</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True then fail if ndf code contains syntax errors. Be mindful of
+<a class="reference internal" href="../docs.html#checking-strictness"><span class="std std-ref">checking strictness</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Model representation of a file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#ndf_parse.model.List" title="ndf_parse.model.List"><em>List</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ndf_parse.expression">
+<span class="sig-name descname"><span class="pre">expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnyStr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_no_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.8/library/typing.html#typing.Dict" title="(in Python v3.8)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/typing.html#typing.Any" title="(in Python v3.8)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ndf_parse.expression" title="Permalink to this definition">#</a></dt>
+<dd><p>Converts <cite>string</cite>/<cite>byte</cite> data to a an expression wrapped in a
+<cite>dict</cite>. Should be used to parse individual expressions for further
+injection into an existing model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>AnyStr</em>) – ndf code to parse.</p></li>
+<li><p><strong>ensure_no_errors</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – If True then fail if ndf code contains syntax errors. Be mindful of
+<a class="reference internal" href="../docs.html#checking-strictness"><span class="std std-ref">checking strictness</span></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>dict</cite> containing an item along with possible extra row attributes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ndf_parse</span> <span class="k">as</span> <span class="nn">ndf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Obj is Typ(</span>
+<span class="gp">... </span><span class="s2">    Memb1 = &quot;SomeStr&quot;</span>
+<span class="gp">... </span><span class="s2">    Memb2 = 12</span>
+<span class="gp">... </span><span class="s2">)&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arg</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="s2">&quot;export A is 12&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arg</span>
+<span class="go">{&#39;value&#39;: &#39;12&#39;, &#39;namespace&#39;: &#39;A&#39;, &#39;visibility&#39;: &#39;export&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">**</span><span class="n">arg</span><span class="p">)</span>  <span class="c1"># ** will deconstruct dict into method&#39;s parameters</span>
+<span class="go">List[1](visibility=&#39;export&#39;, namespace=&#39;A&#39;, value=&#39;12&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memb</span> <span class="o">=</span> <span class="n">ndf</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="s2">&quot;Memb3 = [1,2,3,Obj2(Memb1 = 5)]&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memb</span>
+<span class="go">{&#39;value&#39;: [List[0](visibility=None, ... }</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">**</span><span class="n">memb</span><span class="p">)</span>
+<span class="go">Object[2](member=&#39;Memb3&#39;, type=None, ...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ndf</span><span class="o">.</span><span class="n">printer</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<span class="go">Obj is Typ</span>
+<span class="go">(</span>
+<span class="go">    Memb1 = &quot;SomeStr&quot;</span>
+<span class="go">    Memb2 = 12</span>
+<span class="go">    Memb3 =</span>
+<span class="go">    [</span>
+<span class="go">        1,</span>
+<span class="go">        2,</span>
+<span class="go">        3,</span>
+<span class="go">        Obj2</span>
+<span class="go">        (</span>
+<span class="go">            Memb1 = 5</span>
+<span class="go">        )</span>
+<span class="go">    ]</span>
+<span class="go">)</span>
+<span class="go">export A is 12</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ndf_parse.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span></span></span><a class="headerlink" href="#ndf_parse.walk" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively walks a model representation of an ndf file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> (str | <a class="reference internal" href="model.html#ndf_parse.model.DeclarationsList" title="ndf_parse.model.DeclarationsList"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarationsList</span></code></a> | <a class="reference internal" href="model.html#ndf_parse.model.DeclListRow" title="ndf_parse.model.DeclListRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclListRow</span></code></a>) – Source to walk.</p></li>
+<li><p><strong>condition</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – <p>Function that is responsible for filtering items. Should return True
+if an item matches desired criteria.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function can accept multiple types so it’s a user’s
+responsibility to validate the <cite>item</cite>.</p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>str | <a class="reference internal" href="model.html#ndf_parse.model.DeclarationsList" title="ndf_parse.model.DeclarationsList"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarationsList</span></code></a> | <a class="reference internal" href="model.html#ndf_parse.model.DeclListRow" title="ndf_parse.model.DeclListRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclListRow</span></code></a> – Items that match the <cite>condition</cite> criteria (i.e. on which the <cite>condition</cite>
+returns True).</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Usage of this function is covered <a class="reference internal" href="../docs.html#finding-items"><span class="std std-ref">here</span></a></p>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="model.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">model</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../reference.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">API Reference</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; Ulibos, 2023-2024
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">ndf-parse</a><ul>
+<li><a class="reference internal" href="#ndf_parse.Edit"><code class="docutils literal notranslate"><span class="pre">Edit</span></code></a><ul>
+<li><a class="reference internal" href="#ndf_parse.Edit.tree"><code class="docutils literal notranslate"><span class="pre">Edit.tree</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Edit.file_path"><code class="docutils literal notranslate"><span class="pre">Edit.file_path</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Edit.save"><code class="docutils literal notranslate"><span class="pre">Edit.save</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ndf_parse.Mod"><code class="docutils literal notranslate"><span class="pre">Mod</span></code></a><ul>
+<li><a class="reference internal" href="#ndf_parse.Mod.mod_src"><code class="docutils literal notranslate"><span class="pre">Mod.mod_src</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.mod_dst"><code class="docutils literal notranslate"><span class="pre">Mod.mod_dst</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.edits"><code class="docutils literal notranslate"><span class="pre">Mod.edits</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.current_edit"><code class="docutils literal notranslate"><span class="pre">Mod.current_edit</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.edit"><code class="docutils literal notranslate"><span class="pre">Mod.edit()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.check_if_src_is_newer"><code class="docutils literal notranslate"><span class="pre">Mod.check_if_src_is_newer()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.update_dst"><code class="docutils literal notranslate"><span class="pre">Mod.update_dst()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.parse_src"><code class="docutils literal notranslate"><span class="pre">Mod.parse_src()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.Mod.parse_dst"><code class="docutils literal notranslate"><span class="pre">Mod.parse_dst()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ndf_parse.convert"><code class="docutils literal notranslate"><span class="pre">convert()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.expression"><code class="docutils literal notranslate"><span class="pre">expression()</span></code></a></li>
+<li><a class="reference internal" href="#ndf_parse.walk"><code class="docutils literal notranslate"><span class="pre">walk()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=548f2ec3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>
