@@ -1,0 +1,12 @@
+{% if versions %}
+<div class="sidebar-tree">
+  <p><span class="caption-text">{{ _('Versions') }}</span></p>
+  <ul>
+    {%- for item in versions.releases|reverse %}
+      <li class="toctree-l1"><a style="padding-left:1rem" href="{{ item.url }}">
+        {{ item.name }}{% if item.name == latest_version.name %} <b>latest</b>{% endif %}
+    </a></li>
+    {%- endfor %}
+  </ul>
+</div>
+{% endif %}

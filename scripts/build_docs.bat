@@ -8,8 +8,8 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set SOURCEDIR=..\sphinx
-set OUTDIR=..\docs
-set BUILDDIR=..\build\docs
+set OUTDIR=..\build\docs
+set BUILDDIR=..\build\docs_cache
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
@@ -25,6 +25,6 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
-%SPHINXBUILD% -M html -d %BUILDDIR% %SOURCEDIR% %OUTDIR% %SPHINXOPTS% %O%
+%SPHINXBUILD% -b html -d %BUILDDIR% %SOURCEDIR% %OUTDIR%
 
 popd

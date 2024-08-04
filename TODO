@@ -1,0 +1,9 @@
+# Tasks for this upadte
+
+- [ ]   consider creating a separate string type for parsed string (should help
+        with comparisons of cases like "test" == 'test')
+- [ ]   remove `playground.py`
+- [ ]   rework list-likes copying from dangling rows (with new parenting to a row
+        should be pretty trivial)
+- [ ]   refactor `scripts/docs_tests.py` to only operate on examples, doc tests
+        are handled by sphinx.

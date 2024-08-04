@@ -1,59 +1,28 @@
 """This package is designed for prcessing Eugen Systems ndf files. It allows for
 easier code manipulations than out-of-the-box differ for Eugen mods.
 """
+
 from __future__ import annotations
-from typing import (
-    AnyStr,
-    Type,
-    Optional,
-    List,
-    Union,
-    Callable,
-    Any,
-    Iterator,
-    Dict,
-)
+import typing as t
 from types import TracebackType
 import os, shutil
 
-import tree_sitter
 from . import converter
 from . import printer
 from . import traverser
 from . import model
+from .parser import parse
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 
-# 3 places to search for ndf.dll in descending priority order:
-# 1. - via env variable NDF_LIB_PATH
-lang_path: Optional[str] = os.environ.get("NDF_LIB_PATH", None)
-if lang_path is None:
-    # 2. - where tree-sitter-cli builds by default
-    dev_path = os.path.expanduser(r"~\AppData\Local\tree-sitter\lib\ndf.dll")
-    if os.path.exists(dev_path):
-        lang_path = dev_path
-if lang_path is None:
-    # 3. - inside of the package distribution
-    lang_path = os.path.join(os.path.dirname(__file__), "bin\\ndf.dll")
-    if not os.path.exists(lang_path):
-        raise RuntimeError(
-            "Could not find ndf.dll in any of default paths. "
-            "Please set env variable `NDF_LIB_PATH=path/to/dll` "
-            "before running this script."
-        )
-
-NDF_LANG = tree_sitter.Language(lang_path, "ndf",)
-
-parser = tree_sitter.Parser()
-parser.set_language(NDF_LANG)
-
+StrBytes = t.Union[str, bytes]
 
 class Edit:
     """Holds data about currently edited file.
 
     Attributes
     ----------
-    tree : :data:`~model.CellValue`
+    tree : :class:`~model.List`
         Model of a currently edited tree.
     file_path : str
         Relative path to a destination file. Path should be relative to a mod
@@ -83,8 +52,12 @@ class Mod:
     edits : list[Edit]
         List of current edits. It tracks nested :meth:`edit` calls and should
         not be edited by hand.
-    current_edit : Edit
-        Currently active edit.
+    current_edit : Edit | None
+        Currently active edit. In fact this is an alias to ``Mod.edits[-1]``,
+        i.e. it's an edit at the top of the stack.
+    current_tree : model.List | None
+        Tree (a model representation of an ndf file) attribute of a currently
+        active edit.
 
     Note
     ----
@@ -94,6 +67,8 @@ class Mod:
 
     Examples
     --------
+    .. doctest::
+        :skipif: True
 
         >>> import ndf_parse as ndf
         >>> mod = ndf.Mod('path/to/unedited/mod', 'path/to/generated/mod')
@@ -101,6 +76,7 @@ class Mod:
         ...     ...  # edits to the source
         >>> # at the end of `with` file gets automatically written out
         None
+
     """
 
     def __init__(self, mod_src: str, mod_dst: str):
@@ -111,7 +87,7 @@ class Mod:
             self.mod_src
         ), f"Could not find path `{self.mod_src}` (expanded representation)."
         self.mod_dst = mod_dst
-        self.edits: List[Edit] = []
+        self.edits: t.List[Edit] = []
 
     def edit(
         self, file_path: str, save: bool = True, ensure_no_errors: bool = True
@@ -171,23 +147,26 @@ class Mod:
         -------
         ~model.List
             Model representation of the source mod file.
-        
+
         Examples
         --------
-        >>> import ndf_parse as ndf
-        >>> mod = ndf.Mod('path/to/unedited/mod', 'path/to/generated/mod')
-        >>> with mod.edit('GameData/path/to/units_file.ndf') as units:
-        ...     # This is a pseudocode, it does not match an actual mod
-        ...     # structure, it's intended to only show a possible use case.
-        ...     # We up the speed for any unit that has a 155mm weapon.
-        ...     weapons = mod.parse_src('GameData/path/to/weapons_file.ndf')
-        ...     for unit_row in units:
-        ...         weapon_class = unit_row.value.by_member('WeaponClass').value
-        ...         weapon_row = weapons.by_namespace(weapon_class)
-        ...         if weapon_row.value.by_member('Caliber').value == '155':
-        ...             unit = unit_row.value
-        ...             speed_row = unit.by_member('Speed')
-        ...             speed_row.value += ' * 2'
+        .. doctest::
+            :skipif: True
+
+            >>> import ndf_parse as ndf
+            >>> mod = ndf.Mod('path/to/unedited/mod', 'path/to/generated/mod')
+            >>> with mod.edit('GameData/path/to/units_file.ndf') as units:
+            ...     # This is a pseudocode, it does not match an actual mod
+            ...     # structure, it's intended to only show a possible use case.
+            ...     # We up the speed for any unit that has a 155mm weapon.
+            ...     weapons = mod.parse_src('GameData/path/to/weapons_file.ndf')
+            ...     for unit_row in units:
+            ...         weapon_class = unit_row.value.by_member('WeaponClass').value
+            ...         weapon_row = weapons.by_namespace(weapon_class)
+            ...         if weapon_row.value.by_member('Caliber').value == '155':
+            ...             unit = unit_row.value
+            ...             speed_row = unit.by_member('Speed')
+            ...             speed_row.value += ' * 2'
         """
         with open(self.__src(file_path), "rb") as r:
             tree = convert(r.read(), ensure_no_errors)
@@ -244,7 +223,13 @@ class Mod:
 
     def update_dst(self):
         """Forcefully rebuilds a clean version of the destination mod, no checks
-        performed."""
+        performed.
+
+        Warning
+        -------
+        Must be used before any edits are applied otherwise they will be
+        overwritten by data from source.
+        """
         if os.path.exists(self.mod_dst):
             shutil.rmtree(self.mod_dst, ignore_errors=False)
         shutil.copytree(self.mod_src, self.mod_dst)
@@ -270,9 +255,56 @@ class Mod:
 
     # edit
     @property
-    def current_edit(self) -> Optional[Edit]:
+    def current_edit(self) -> t.Optional[Edit]:
         if len(self.edits):
             return self.edits[-1]
+
+    @property
+    def current_tree(self) -> t.Optional[model.List]:
+        if len(self.edits):
+            return self.edits[-1].tree
+
+    def write_edit(self, edit: Edit, force: bool = True) -> bool:
+        """Write given edit to the destination. Return True if data was written
+        out.
+
+        An example of writing a bunch of edits if context manager (``with``
+        statement) was not used:
+
+        .. doctest::
+            :skipif: True
+
+            >>> import ndf_parse as ndf
+            >>> mod = ndf.Mod('path/to/unedited/mod', 'path/to/generated/mod')
+            >>> # load sources to be edited
+            >>> ammo_src = Mod.edit('GameData/../Ammunition.ndf').current_tree
+            >>> unit_src = Mod.edit('GameData/../UniteDescriptor.ndf').current_tree
+            >>> # load decks for reference only, no need to write out later
+            >>> decks_src = Mod.edit('GameData/../Decks.ndf', False).current_tree
+            >>> ...  # do stuff here
+            >>> for edit in mod.edits:
+            >>>     mod.write_edit(edit, False)  # disabled forced write so it
+            >>>                                  # does not write `decks_src` out
+
+        Parameters
+        ----------
+        edit : Edit
+            An edit to write out to the destination mod.
+        force : bool , default=True
+            If True (default) then ignores :attr:`Edit.save` property of the
+            edit and writes out always.
+
+        Returns
+        -------
+            ``True`` if file was written out, ``False`` otherwise.
+        """
+        if edit.save or force:
+            with open(
+                self.__dst(edit.file_path), "w", encoding="utf-8"
+            ) as w:
+                printer.format(edit.tree, w)
+            return True
+        return False
 
     # context manager
     def __enter__(self) -> model.List:
@@ -286,17 +318,13 @@ class Mod:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[Exception]],
-        exc_value: Optional[Exception],
-        exc_traceback: Optional[TracebackType],
+        exc_type: t.Optional[t.Type[Exception]],
+        exc_value: t.Optional[Exception],
+        exc_traceback: t.Optional[TracebackType],
     ) -> bool:
         if len(self.edits):
             edit = self.edits.pop()
-            if edit.save:
-                with open(
-                    self.__dst(edit.file_path), "w", encoding="utf-8"
-                ) as w:
-                    printer.format(edit.tree, w)
+            self.write_edit(edit, False)
         return False
 
     # path utils
@@ -310,13 +338,15 @@ class Mod:
         return os.path.join(self.mod_dst, path)
 
 
-def convert(data: AnyStr, ensure_no_errors: bool = True) -> model.List:  # type: ignore
+def convert(
+    data: t.Union[str, bytes], ensure_no_errors: bool = True
+) -> model.List:
     """Converts `string`/`byte` data to a :class:`~model.List` object.
     Should be used to parse ndf files as a whole.
 
     Parameters
     ----------
-    data : AnyStr
+    data : str | bytes
         ndf code to parse.
     ensure_no_errors : bool, default=True
         If True then fail if ndf code contains syntax errors. Be mindful of
@@ -328,21 +358,21 @@ def convert(data: AnyStr, ensure_no_errors: bool = True) -> model.List:  # type:
         Model representation of a file.
     """
     if isinstance(data, str):
-        data: bytes = data.encode()
-    tree: tree_sitter.Node = parser.parse(data).root_node
-    if ensure_no_errors:
-        traverser.check_tree(tree)
+        data = data.encode()
+    tree = parse(data, ensure_no_errors)
+    if isinstance(tree, list):
+        traverser.throw_tree_errors(data.decode(), tree, 0)
     return converter.convert(tree)
 
 
-def expression(data: AnyStr, ensure_no_errors: bool = True) -> Dict[str, Any]:  # type: ignore
+def expression(data: StrBytes, ensure_no_errors: bool = True) -> t.Dict[str, t.Any]:
     """Converts `string`/`byte` data to a an expression wrapped in a
     `dict`. Should be used to parse individual expressions for further
     injection into an existing model.
 
     Parameters
     ----------
-    data : AnyStr
+    data : str | bytes
         ndf code to parse.
     ensure_no_errors : bool, optional, default=True
         If True then fail if ndf code contains syntax errors. Be mindful of
@@ -350,28 +380,38 @@ def expression(data: AnyStr, ensure_no_errors: bool = True) -> Dict[str, Any]:  
 
     Returns
     -------
-    dict
+    DictWrapped
         A `dict` containing an item along with possible extra row attributes.
-    
+
     Examples
     --------
 
     >>> import ndf_parse as ndf
-    >>> src = \"\"\"Obj is Typ(
+    >>> src = '''Obj is Typ(
     ...     Memb1 = "SomeStr"
     ...     Memb2 = 12
-    ... )\"\"\"
+    ... )'''
     >>> source = ndf.convert(src)
     >>> arg = ndf.expression("export A is 12")
     >>> arg
     {'value': '12', 'namespace': 'A', 'visibility': 'export'}
     >>> source.add(**arg)  # ** will deconstruct dict into method's parameters
-    List[1](visibility='export', namespace='A', value='12')
+    ListRow[1](value='12', visibility='export', namespace='A')
     >>> memb = ndf.expression("Memb3 = [1,2,3,Obj2(Memb1 = 5)]")
     >>> memb
-    {'value': [List[0](visibility=None, ... }
+    {'value': List[ListRow[0](value='1', visibility=None, namespace=None),
+    ListRow[1](value='2', visibility=None, namespace=None),
+    ListRow[2](value='3', visibility=None, namespace=None),
+    ListRow[3](value=Object[MemberRow[0](value='5', member='Memb1',
+    type=None, visibility=None, namespace=None)], visibility=None,
+    namespace=None)], 'member': 'Memb3'}
     >>> source[0].value.add(**memb)
-    Object[2](member='Memb3', type=None, ...)
+    MemberRow[2](value=List[ListRow[0](value='1', visibility=None, namespace=None),
+    ListRow[1](value='2', visibility=None, namespace=None),
+    ListRow[2](value='3', visibility=None, namespace=None),
+    ListRow[3](value=Object[MemberRow[0](value='5', member='Memb1', type=None,
+    visibility=None, namespace=None)], visibility=None, namespace=None)],
+    member='Memb3', type=None, visibility=None, namespace=None)
     >>> ndf.printer.print(source)
     Obj is Typ
     (
@@ -389,24 +429,46 @@ def expression(data: AnyStr, ensure_no_errors: bool = True) -> Dict[str, Any]:  
         ]
     )
     export A is 12
-    
+
     """
-    if isinstance(data, str):
-        data: bytes = data.encode()
-    tree: tree_sitter.Node = parser.parse(data).root_node
-    if ensure_no_errors:
-        traverser.check_tree(tree)
+    tree = parse(data, ensure_no_errors)
+    if isinstance(tree, list):
+        traverser.throw_tree_errors(data, tree)
     return converter.find_converter(tree.children[0])
 
 
-WalkerItem = Union[
-    model.DeclarationsList[model.DeclListRow_co], model.DeclListRow_co, str
-]
+def expressions(data: StrBytes, ensure_no_errors: bool = True) -> t.List[t.Dict[str, t.Any]]:  # type: ignore
+    """Same as :func:`expression`, only outputs a list of expressions instead of
+    only the first one.
+
+    data : str | bytes
+        ndf code to parse.
+    ensure_no_errors : bool, optional, default=True
+        If True then fail if ndf code contains syntax errors. Be mindful of
+        :ref:`checking strictness <checking-strictness>`.
+
+    Returns
+    -------
+    list[DictWrapped]
+        A `list` of `dict` items containing expressions with additional data.
+    """
+    tree = parse(data, ensure_no_errors)
+    if isinstance(tree, list):
+        traverser.throw_tree_errors(data, tree)
+    return list(converter.find_converter(x) for x in tree.children)
+
+
+def show_source_in_error_logs(value: bool):
+    traverser.SHOW_SOURCE_IN_ERROR_LOGS = value
+
+
+WalkerItem = t.Union[model.abc.List[model.abc.GR], model.abc.GR, str]
 
 
 def walk(
-    item: WalkerItem[model.DeclListRow_co], condition: Callable[[Any], bool],
-) -> Iterator[Any]:
+    item: WalkerItem[model.abc.GR],
+    condition: t.Callable[[t.Any], bool],
+) -> t.Iterator[t.Any]:
     """walk(item, condition)->Iterator
     Recursively walks a model representation of an ndf file.
 
@@ -427,21 +489,21 @@ def walk(
     str | :class:`~model.DeclarationsList` | :class:`~model.DeclListRow`
         Items that match the `condition` criteria (i.e. on which the `condition`
         returns True).
-    
+
     Examples
     --------
-    Usage of this function is covered :ref:`here <finding-items>`
+    Usage of this function is covered :ref:`here <search-tools>`
     """
     if condition(item):
         yield item
-    if isinstance(item, model.DeclListRow):
+    if isinstance(item, model.abc.Row):
         for result in walk(item.value, condition):  # type: ignore
             yield result
     if isinstance(item, model.Template):
         for param in item.params:
             for result in walk(param, condition):
                 yield result
-    if isinstance(item, model.DeclarationsList):
+    if isinstance(item, model.abc.List):
         for row in item:
             for result in walk(row, condition):
                 yield result
@@ -453,6 +515,7 @@ __all__ = [
     "traverser",
     "convert",
     "expression",
+    "expressions",
     "parser",
     "Mod",
     "model",

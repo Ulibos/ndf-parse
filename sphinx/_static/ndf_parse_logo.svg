@@ -1,0 +1,22 @@
+<svg width="256" height="160" version="1.1" viewBox="0 0 512 320" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<filter id="blur" x="-.0227" y="-.0938" width="1.05" height="1.19" style="color-interpolation-filters:sRGB">
+			<feGaussianBlur result="blur" stdDeviation="4 4"/>
+		</filter>
+		<filter id="shadow" x="-.089" y="-.321" width="1.18" height="1.71" style="color-interpolation-filters:sRGB">
+			<feFlood flood-color="rgb(0,0,0)" result="flood"/>
+			<feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+			<feGaussianBlur in="composite1" result="blur" stdDeviation="10"/>
+			<feOffset dx="0" dy="5" result="offset"/>
+			<feComposite in="SourceGraphic" in2="offset" result="fbSourceGraphic"/>
+		</filter>
+		<linearGradient id="grad_fill" x1="186" x2="326" y1="390" y2="390" gradientUnits="userSpaceOnUse">
+			<stop style="stop-color:#009" offset="0"/>
+			<stop style="stop-color:#800" offset="1"/>
+		</linearGradient>
+	</defs>
+	<path id="grad" d="m44.9 192 34.5 102h8.87l-34.5-102zm24.9 0 34.5 102h30.9l-34.5-102zm35.5 0 34.5 102h232l34.5-102zm306 0-34.5 102h30.9l34.5-102zm46.8 0-34.5 102h8.87l34.5-102z" style="fill-rule:evenodd;fill:url(#grad_fill);filter:url(#blur);paint-order:markers fill stroke;stroke-linecap:round;stroke-width:2"/>
+	<path id="parse" d="m122 205v74.8h13.6v-28.9h23.7l9.38-9.36v-27.2l-9.38-9.35zm68.1 0-21.4 74.8h13.6l4.69-18.4h18.8l5.28 18.4h13.1l-21.6-74.8zm39.9 0v74.8h13.6v-28.9h9.03l11.3 28.9h15.1l-11.7-28.9 9.38-9.36v-27.2l-9.38-9.35zm66 0-9.38 9.35v25l9.38 9.36h23.1v17.3h-32.2v7.83l5.98 5.96h31.1l9.38-9.35v-26.1l-9.38-9.47h-23.1v-16.1h32.2v-7.83l-5.98-5.96zm49 0v74.8h46.8v-13h-33.1v-17.7h22.4v-13.6h-22.4v-17.7h33.1v-13zm-209 13h19.5v20h-19.5zm108 0h19.5v19.4h-19.5zm-47.2 8.77 5.74 22.5h-11.6z" style="fill:#fdfdc8;filter:url(#shadow)"/>
+	<path id="NDF_red" d="m94.4 60.8v12.3h36.6l-8.79-12.3zm79.1 0v12.3h28.1v-12.3zm36.9 0v12.3h106c-3.63-8.19-9.49-12.3-17.6-12.3zm135 0c-8.09 0-13.9 4.09-17.6 12.3h97.6v-12.3zm-251 14v12.2h46.5l-8.73-12.2zm79.1 0v12.2h28.1v-12.2zm36.9 0v12.2h107v-7.81c0-1.29-0.175-2.75-0.526-4.39zm117 0c-0.352 1.64-0.526 3.1-0.526 4.39v7.81h98.5v-12.2zm-233 14.1v12h56.4l-8.56-12zm79.1 0v12h28.1v-12zm36.9 0v12h28.1v-12zm79.1 0v12h28.1v-12zm36.9 0v12h28.1v-12zm-232 14.3v11.6h28.1v-1.15l0.767 1.15h37.4l-8.29-11.6zm79.1 0v11.6h28.1v-11.6zm36.9 0v11.6h28.1v-11.6zm79.1 0v11.6h28.1v-11.6zm36.9 0v11.6h98.5v-11.6zm-232 14.3v11.1h28.1v-11.1zm31 0 7.79 11.1h37.5l-7.79-11.1zm48.2 0v11.1h28.1v-11.1zm36.9 0v11.1h28.1v-11.1zm79.1 0v11.1h28.1v-11.1zm36.9 0v11.1h98.5v-11.1zm-232 14.2v10.6h28.1v-10.6zm41.1 0 7.62 10.6h58.5v-10.6h-28.1v0.846l-0.564-0.846zm74.9 0v10.6h28.1v-10.6zm79.1 0v10.6h28.1v-10.6zm36.9 0v10.6h28.1v-10.6zm-232 14.2v10.3h28.1v-10.3zm51.3 0 7.35 10.3h48.6v-10.3zm64.8 0v10.3h28.1v-10.3zm79.1 0v10.3h28.1v-10.3zm36.9 0v10.3h28.1v-10.3zm-232 14.2v9.85h28.1v-9.85zm61.4 0 7.06 9.85h38.8v-9.85zm54.6 0v9.85h107c0.179-1.1 0.301-2.14 0.301-3.05v-6.8zm116 0v9.85h28.1v-9.85zm-232 14.2v11h28.1v-11zm71.6 0 7.86 11h27.8v-11zm44.4 0v11h88.8c7.63 0 13.3-3.69 16.9-11zm116 0v11h28.1v-11z" style="fill:#f00;mix-blend-mode:lighten"/>
+	<path id="NDF_green" d="m87 60.8v12.3h36.6l-8.79-12.3zm79.1 0v12.3h28.1v-12.3zm36.9 0v12.3h106c-3.63-8.19-9.49-12.3-17.6-12.3zm135 0c-8.09 0-14 4.09-17.6 12.3h97.6v-12.3zm-251 14v12.2h46.5l-8.73-12.2zm79.1 0v12.2h28.1v-12.2zm36.9 0v12.2h107v-7.81c0-1.29-0.175-2.75-0.526-4.39zm117 0c-0.352 1.64-0.529 3.1-0.529 4.39v7.81h98.5v-12.2zm-233 14.1v12h56.4l-8.56-12zm79.1 0v12h28.1v-12zm36.9 0v12h28.1v-12zm79.1 0v12h28.1v-12zm36.9 0v12h28.1v-12zm-232 14.3v11.6h28.1v-1.15l0.767 1.15h37.4l-8.29-11.6zm79.1 0v11.6h28.1v-11.6zm36.9 0v11.6h28.1v-11.6zm79.1 0v11.6h28.1v-11.6zm36.9 0v11.6h98.5v-11.6zm-232 14.3v11.1h28.1v-11.1zm31 0 7.79 11.1h37.5l-7.79-11.1zm48.2 0v11.1h28.1v-11.1zm36.9 0v11.1h28.1v-11.1zm79.1 0v11.1h28.1v-11.1zm36.9 0v11.1h98.5v-11.1zm-232 14.2v10.6h28.1v-10.6zm41.1 0 7.62 10.6h58.5v-10.6h-28.1v0.846l-0.564-0.846zm74.9 0v10.6h28.1v-10.6zm79.1 0v10.6h28.1v-10.6zm36.9 0v10.6h28.1v-10.6zm-232 14.2v10.3h28.1v-10.3zm51.3 0 7.35 10.3h48.6v-10.3zm64.8 0v10.3h28.1v-10.3zm79.1 0v10.3h28.1v-10.3zm36.9 0v10.3h28.1v-10.3zm-232 14.2v9.85h28.1v-9.85zm61.4 0 7.06 9.85h38.8v-9.85zm54.6 0v9.85h107c0.179-1.1 0.301-2.14 0.301-3.05v-6.8zm116 0v9.85h28.1v-9.85zm-232 14.2v11h28.1v-11zm71.6 0 7.86 11h27.8v-11zm44.4 0v11h88.8c7.63 0 13.3-3.69 16.9-11zm116 0v11h28.1v-11z" style="fill:#0f0;mix-blend-mode:lighten"/>
+</svg>
