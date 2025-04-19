@@ -623,10 +623,16 @@ class List(t.Sequence[GR]):
     >>> lst[2:2] = "After is 42, After2 is 69"  # can also insert multiple
     >>> lst
     List[ListRow[0](value='24', visibility=None, namespace='Before'),
-    ListRow[1](value='42', visibility=None, namespace='After'),
-    ListRow[2](value='69', visibility=None, namespace='After2')]
+    ListRow[1](value='12', visibility=None, namespace='Name'),
+    ListRow[2](value='42', visibility=None, namespace='After'),
+    ListRow[3](value='69', visibility=None, namespace='After2')]
     >>> lst[1] = "Replace is 25"  # replace a given row
-    >>> del lst[2]  # delete last row
+    >>> del lst[3]  # delete last row
+    >>> lst
+    List[ListRow[0](value='24', visibility=None, namespace='Before'),
+    ListRow[1](value='25', visibility=None, namespace='Replace'),
+    ListRow[2](value='42', visibility=None, namespace='After')]
+    >>> del lst[-1]  # alternative syntax to delete last row
     >>> lst
     List[ListRow[0](value='24', visibility=None, namespace='Before'),
     ListRow[1](value='25', visibility=None, namespace='Replace')]
@@ -751,7 +757,7 @@ class List(t.Sequence[GR]):
     def _compare(self, other: object, existing_only: bool = True) -> bool:
         if not hasattr(other, "__iter__") and hasattr(other, "__len__"):
             return False
-        if isinstance(other, (str, bytes)):
+        if isinstance(other, (str, bytes, type(None))): # TODO: make sure None should be checked here and not processed at a different stage (reparenting)
             return False
         other = t.cast(t.Collection[t.Any], other)
         if not existing_only:
@@ -1171,9 +1177,9 @@ class List(t.Sequence[GR]):
         key: slice,
         args: t.Generator[t.Tuple[bool, GR], None, None],
     ) -> t.List[GR]:
-        start = key.start or 0
-        stop = key.stop or len(self.__inner)
-        step = key.step or 1
+        start = 0                 if key.start is None else key.start
+        stop  = len(self.__inner) if key.stop  is None else key.stop
+        step  = 1                 if key.step  is None else key.step
         rows: t.List[GR] = []
         if start != stop:
             # make copies for any rows that are to be reused except for ones

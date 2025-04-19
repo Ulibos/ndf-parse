@@ -53,6 +53,12 @@ def visibility(node: ts.Node) -> DictWrapped:
     return res_node
 
 
+def unnamed(node: ts.Node) -> DictWrapped:
+    res_node: DictWrapped = find_converter(field(node, "object"))
+    res_node["visibility"] = "unnamed"
+    return res_node
+
+
 def assignment(node: ts.Node) -> DictWrapped:
     res_node: DictWrapped = find_converter(field(node, "value"))
     res_node["namespace"] = field(node, "name").text.decode()
@@ -161,6 +167,7 @@ PROCESSORS: Dict[str, Processor] = {
     "map": conv_map,
     "list": conv_list,
     "pair": pair,
+    "unnamed": unnamed,
 }
 
 __all__ = ["convert", "find_converter", "DictWrapped"]

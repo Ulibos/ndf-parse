@@ -13,7 +13,7 @@ from . import traverser
 from . import model
 from .parser import parse
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 StrBytes = t.Union[str, bytes]
 
