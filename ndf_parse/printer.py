@@ -262,7 +262,7 @@ def member_printer(state: State, member: md.MemberRow):
         w(' = ')
     if vis    is not None: w(f"{vis} ")
     if namesp is not None: w(f"{namesp} is ")
-    parse(state, val) 
+    parse(state, val)
     state.indent = indent
     # fmt: on
 

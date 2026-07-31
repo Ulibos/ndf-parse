@@ -339,7 +339,8 @@ class Mod:
 
 
 def convert(
-    data: t.Union[str, bytes], ensure_no_errors: bool = True
+    data: t.Union[str, bytes], ensure_no_errors: bool = True,
+    context: converter.ConverterContext = converter.context_basic,
 ) -> model.List:
     """Converts `string`/`byte` data to a :class:`~model.List` object.
     Should be used to parse ndf files as a whole.
@@ -362,10 +363,14 @@ def convert(
     tree = parse(data, ensure_no_errors)
     if isinstance(tree, list):
         traverser.throw_tree_errors(data.decode(), tree, 0)
-    return converter.convert(tree)
+    return converter.convert(tree, context)
 
 
-def expression(data: StrBytes, ensure_no_errors: bool = True) -> t.Dict[str, t.Any]:
+def expression(
+    data: StrBytes,
+    ensure_no_errors: bool = True,
+    context: converter.ConverterContext = converter.context_basic,
+) -> t.Dict[str, t.Any]:
     """Converts `string`/`byte` data to a an expression wrapped in a
     `dict`. Should be used to parse individual expressions for further
     injection into an existing model.
@@ -434,10 +439,14 @@ def expression(data: StrBytes, ensure_no_errors: bool = True) -> t.Dict[str, t.A
     tree = parse(data, ensure_no_errors)
     if isinstance(tree, list):
         traverser.throw_tree_errors(data, tree)
-    return converter.find_converter(tree.children[0])
+    return converter.find_converter(tree.children[0], context, 0)
 
 
-def expressions(data: StrBytes, ensure_no_errors: bool = True) -> t.List[t.Dict[str, t.Any]]:  # type: ignore
+def expressions(
+    data: StrBytes,
+    ensure_no_errors: bool = True,
+    context: converter.ConverterContext = converter.context_basic,
+) -> t.List[t.Dict[str, t.Any]]:  # type: ignore
     """Same as :func:`expression`, only outputs a list of expressions instead of
     only the first one.
 
@@ -455,7 +464,7 @@ def expressions(data: StrBytes, ensure_no_errors: bool = True) -> t.List[t.Dict[
     tree = parse(data, ensure_no_errors)
     if isinstance(tree, list):
         traverser.throw_tree_errors(data, tree)
-    return list(converter.find_converter(x) for x in tree.children)
+    return list(converter.find_converter(x, context, 0) for x in tree.children)
 
 
 def show_source_in_error_logs(value: bool):

@@ -1,8 +1,10 @@
 from __future__ import annotations
 import sys
 import typing as t
+import tree_sitter as ts
 from typing import overload
 from . import abc
+from .. import converter
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -11,7 +13,6 @@ else:
 
 OptStr = t.Optional[str]
 OptParent = t.Optional[abc.List[abc.Row]]
-Pair = t.Tuple[abc.CellValue, abc.CellValue]
 
 class ListRow(abc.Row):
     visibility: OptStr
@@ -159,7 +160,7 @@ class MapRow(abc.Row):
 
     # fmt: off
     @overload
-    def __init__(self, input: Pair) -> None: ...
+    def __init__(self, input: abc.Pair) -> None: ...
     @overload
     def __init__(self, key: str, value: abc.CellValue, _strict: bool = True) -> None: ...
     @overload
@@ -170,7 +171,7 @@ class MapRow(abc.Row):
     def __init__(self, k: str, v: abc.CellValue, _strict: t.Literal[False] = False, **kwargs: abc.OptCellValue) -> None: ...
 
     @overload
-    def edit(self, input: Pair) -> Self: ...
+    def edit(self, input: abc.Pair) -> Self: ...
     @overload
     def edit(self, key: str = None, value: abc.CellValue = None, _strict: bool = True) -> Self: ...  # type: ignore
     @overload
@@ -182,6 +183,8 @@ class MapRow(abc.Row):
     @overload
     def edit(self, **kwargs: abc.OptCellValue) -> Self: ...  # type: ignore
     # fmt: on
+
+    def compare(self, other: object, existing_only: bool = True) -> bool: ...
 
 class List(abc.List[ListRow]):
     _row_type = ListRow
@@ -320,7 +323,7 @@ class Map(abc.List[MapRow]):
     @overload
     def add(self, input: str) -> t.Union[t.List[MapRow], MapRow]: ...
     @overload
-    def add(self, input: t.Union[abc.DictWrapped, MapRow, Pair]) -> MapRow: ...
+    def add(self, input: t.Union[abc.DictWrapped, MapRow, abc.Pair]) -> MapRow: ...
     @overload
     def add(self, *input: abc.AllRowInputs[MapRow]) -> t.List[MapRow]: ...  # type: ignore
 
@@ -341,3 +344,71 @@ class Map(abc.List[MapRow]):
     rm_k = remove_by_key
     # fmt: on
 
+
+class UnparsedExpression(str):
+    tree_ref: ts.Node
+    def __new__(cls, *args: t.Any, tree_ref: ts.Node, **kwargs: t.Any) -> Self: ...
+    def rewrap(self, value: t.Any) -> Self: ...
+    def parse(
+        self,
+        context: converter.ConverterContext = converter.context_step,
+    ) -> t.Any: ...
+
+class ExprUnary(abc.Expression):
+    value: abc.CellValue
+    op: str
+    def __init__(self, value: abc.CellValue, op: str, grouped: bool = False) -> None: ...
+
+    @property
+    def v(self) -> abc.CellValue: ...
+    @v.setter
+    def v(self, value: abc.CellValue) -> None: ...
+
+    @property
+    def o(self) -> str: ...
+    @o.setter
+    def o(self, op: str) -> None: ...
+
+
+class ExprBinary(abc.Expression):
+    left: abc.CellValue
+    right: abc.CellValue
+    op: str
+    def __init__(self, left: abc.CellValue, right: abc.CellValue, op: str, grouped: bool = False) -> None: ...
+
+    @property
+    def l(self) -> abc.CellValue: ...
+    @l.setter
+    def l(self, value: abc.CellValue) -> None: ...
+
+    @property
+    def r(self) -> abc.CellValue: ...
+    @r.setter
+    def r(self, value: abc.CellValue) -> None: ...
+
+    @property
+    def o(self) -> str: ...
+    @o.setter
+    def o(self, op: str) -> None: ...
+
+
+class ExprTernary(abc.Expression):
+    condition: abc.CellValue = condition
+    iftrue: abc.CellValue = iftrue
+    iffalse: abc.CellValue = iffalse
+    def __init__(self, condition: abc.CellValue, iftrue: abc.CellValue, iffalse: abc.CellValue, grouped: bool = False) -> None: ...
+
+    @property
+    def c(self) -> abc.CellValue: ...
+    @c.setter
+    def c(self, value: abc.CellValue) -> None: ...
+
+    @property
+    def t(self) -> abc.CellValue: ...
+    @t.setter
+    def t(self, value: abc.CellValue) -> None: ...
+
+    @property
+    def f(self) -> abc.CellValue: ...
+    @f.setter
+    def f(self, value: abc.CellValue) -> None: ...

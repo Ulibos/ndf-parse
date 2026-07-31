@@ -5,7 +5,7 @@ for ease of distinguishing one from the other in checks) that holds Rows of an
 appropriate subtype. Actual concrete classes perform only minor overrides and
 add aliases for convenience and brevity.
 """
-
+from __future__ import annotations
 import sys
 import copy
 import tree_sitter as ts
@@ -18,6 +18,9 @@ if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
+
+if t.TYPE_CHECKING:
+    from . import UnparsedExpression
 
 
 def is_pair(arg: t.Any) -> bool:
@@ -43,8 +46,8 @@ ItemKey = t.Union[slice, t.SupportsIndex, t.Iterable[t.SupportsIndex]]
 
 #: Generic Row
 GR = t.TypeVar("GR", bound="Row", covariant=True)
-# Pair = t.Tuple["CellValue", "CellValue"]
-CellValue = t.Union["List[Row]", str]  # , Pair]
+Pair = t.Tuple["OptCellValue", "OptCellValue"]
+CellValue = t.Union["List[Row]", "Expression", str , Pair]
 OptCellValue = t.Optional[CellValue]
 DictWrapped = t.Mapping[str, OptCellValue]
 RowInput = t.Union[str, DictWrapped, GR]
@@ -160,8 +163,10 @@ class Row:
         """
         return self.__edit(".edit()", "edited", args, kwargs)
 
-    def edit_ndf(self, code: str) -> Self:
-        """edit_ndf(code) -> self
+    def edit_ndf(self, code: str,
+        context: converter.ConverterContext = converter.context_basic,
+    ) -> Self:
+        """edit_ndf(code, converter: converter.ConverterContext) -> self TODO: FINALIZE
         Edit a row using ndf code. The code should contain an expression
         representing a single object of the same type as the row is, i.e. for
         :class:`ListRow <ndf_parse.model.ListRow>` it would look like this:
@@ -199,7 +204,7 @@ class Row:
                 "edit(code) expects exactly one statement to be present in the "
                 f"ndf code, got {len(entries)}."
             )
-        return self.__edit_dict(**converter.find_converter(entries[0]))
+        return self.__edit_dict(**converter.find_converter(entries[0], context, 0,))
 
     @classmethod
     def from_ndf(cls, code: str) -> Self:
@@ -350,6 +355,28 @@ class Row:
                     return False
         return True
 
+    def __expand(self, key: str,
+        context: converter.ConverterContext = converter.context_step) -> None:
+        """If current row is a string then converts it to a model data.
+        Else silently skips it. TODO: FINALIZE
+
+        Parameters
+        ----------
+        context : :type:`~converter.ConverterContext`,
+        default=converter.context_step
+            Controls converter flow. By default parses all data types
+            but only one step deep. Can be swapped with `converter.context_all`
+            to parse the entire tree or with a custom one tailored to
+            convert only specific nodes.
+        """
+        value = getattr(self, key)
+        if isinstance(value, UnparsedExpression):
+            setattr(self, key, value.parse(context))
+        elif isinstance(self, str):
+            ...
+        else:
+            return
+
     # ================ DUNDER METHODS
     def __index__(self) -> int:
         """Method for ``int(Self)``."""
@@ -383,7 +410,7 @@ class Row:
         return self.compare(other, False)
 
     def __setattr__(self, name: str, value: object):
-        """Auto parenting and alias remepping to actual properties are
+        """Auto parenting and alias remapping to actual properties are
         implemented here.
         """
         if name not in self._args_names_flat:
@@ -550,7 +577,7 @@ class Row:
                         "does not exist."
                     )
                 v = kwargs[k]
-                if isinstance(v, (str, List)):
+                if isinstance(v, (str, List, Expression)):
                     continue
                 elif is_pair(v):
                     continue
@@ -1284,16 +1311,34 @@ class List(t.Sequence[GR]):
         return value
 
     # ================ VIRTUAL METHODS
-    def __from_str__(self, code: str) -> t.Iterable[GR]:
+    def __from_str__(self, code: str,
+        context: converter.ConverterContext = converter.context_basic,
+    ) -> t.Iterable[GR]:
         """Most basic implementation for the code converter. Should be overriden
         as necessary.
 
         :meta public:
         """
         yield from (
-            self._row_type(**converter.find_converter(n))
+            self._row_type(**converter.find_converter(n, context, 0))
             for n in self._row_type._entries_parser(code)  # type: ignore
         )
+
+
+# ============================ expressions =============================
+
+
+class Expression(object):
+    """Expression()
+    Serves mostly as a type detection helper plus incapsulates grouping to
+    avoid excessive nesting in structures.
+    """
+    def __init__(self, grouped: bool = False):
+        self.grouped = grouped
+
+    def __repr__(self):
+        args = (f'{k}={repr(getattr(self, k))}' for k in vars(self))
+        return f'{self.__class__.__name__}({", ".join(args)})'
 
 
 # ========================= pprint dispatcher ==========================
@@ -1311,7 +1356,7 @@ def _pprint_model_list(
     child_indent: int = indent + max(self._indent_per_level - 2, 0)  # type: ignore
     stream.write(f"{object.__class__.__name__}[\n{' ' * child_indent}")
     self._format_items(  # type: ignore
-        object.inner(), stream, indent, allowance + 1, context, level
+        object.inner(), stream, indent, allowance + 1, context, level  # type: ignore
     )
     stream.write(f"]")
 

@@ -122,6 +122,7 @@ from __future__ import annotations
 import typing as t
 import sys
 import copy
+import tree_sitter as ts
 from .. import converter, parser
 from . import abc
 
@@ -226,7 +227,7 @@ class MapRow(abc.Row):
         comparisons against tuple pairs.
         """
         if abc.is_pair(other):
-            other = t.cast(t.Tuple[abc.OptCellValue, abc.OptCellValue], other)
+            other = t.cast(abc.Pair, other)
             if existing_only:
                 result = True
                 for v1, v2 in zip((self.k, self.v), other):
@@ -263,7 +264,10 @@ class MapRow(abc.Row):
         """
         return self.__apply_args(super().edit, args, kwargs)
 
-    def edit_ndf(self, code: str) -> Self:
+    def edit_ndf(
+        self,code: str,
+        context: converter.ConverterContext = converter.context_basic,
+    ) -> Self:
         entries = self.__class__._entries_parser(code)
         if len(entries) != 1:
             raise ValueError(
@@ -271,7 +275,9 @@ class MapRow(abc.Row):
                 f"ndf code, got {len(entries)}."
             )
         return self.__apply_args(
-            super().edit, converter.find_converter(entries[0])["value"], {}
+            super().edit,
+            converter.find_converter(entries[0], context, 0)["value"],
+            {}
         )
 
     def __apply_args(
@@ -282,7 +288,7 @@ class MapRow(abc.Row):
     ) -> _T:
         if len(args) == 1 and len(kwargs) == 0 and abc.is_pair(args[0]):
             # case .__apply_args(TuplePair)
-            return __method(*args[0], **kwargs)
+            return __method(*args[0], **kwargs)  # type: ignore
         elif (
             len(args) == 0
             and len(kwargs) == 1
@@ -323,13 +329,15 @@ class List(abc.List[ListRow]):
         result.type = self.type
         return result
 
-    def __from_str__(self, code: str) -> t.Iterable[ListRow]:
+    def __from_str__(self, code: str,
+        context: converter.ConverterContext = converter.context_basic,
+    ) -> t.Iterable[ListRow]:
         if self.is_root:  # default insert_str is implemented for scene root
             prs = parser.entries_root
         else:
             prs = parser.entries_list
         yield from (
-            self._row_type(**converter.find_converter(n)) for n in prs(code)
+            self._row_type(**converter.find_converter(n, context, 0)) for n in prs(code)
         )
 
     def by_namespace(
@@ -568,9 +576,11 @@ class Map(abc.List[MapRow]):
 
     rm_k = remove_by_key
 
-    def __from_str__(self, code: str) -> t.Iterable[MapRow]:
+    def __from_str__(self, code: str,
+        context: converter.ConverterContext = converter.context_basic,
+    ) -> t.Iterable[MapRow]:
         yield from (
-            self._row_type(*converter.pair(n)["value"])
+            self._row_type(*converter.pair(n, context, 0)["value"])
             for n in parser.entries_map(code)
         )
 
@@ -598,6 +608,94 @@ class Map(abc.List[MapRow]):
             yield from super().__yield_rows__(input)
 
 
+################################## Param Items #################################
+
+
+class UnparsedExpression(str):
+    tree_ref: ts.Node
+
+    def __new__(cls, *args: t.Any, **kwargs: t.Any) -> Self:
+        if "tree_ref" not in kwargs:
+            raise TypeError("Missing required keyword argument: 'tree_ref'")
+        tree_ref = kwargs.pop("tree_ref")
+        result = str.__new__(cls, *args, **kwargs)
+        result.tree_ref = tree_ref
+        return result
+
+    def rewrap(self, value: t.Any) -> Self:
+        return self.__class__(str(value), tree_ref=self.tree_ref)
+
+    def parse(self, context: converter.ConverterContext = converter.context_step):
+        return converter.find_converter(
+            self.tree_ref, context, 0)["value"]
+
+
+class ExprUnary(abc.Expression):
+    def __init__(self, value: abc.CellValue, op: str, grouped: bool = False):
+        super().__init__(grouped)
+        self.value: abc.CellValue = value
+        self.op: str = op
+
+    @property
+    def v(self) -> abc.CellValue: return self.value
+    @v.setter
+    def v(self, value: abc.CellValue) -> None: self.value = value
+
+    @property
+    def o(self) -> str: return self.op
+    @o.setter
+    def o(self, op: str) -> None: self.op = op
+
+
+class ExprBinary(abc.Expression):
+    def __init__(self, left: abc.CellValue, right: abc.CellValue, op: str, grouped: bool = False):
+        super().__init__(grouped)
+        self.left: abc.CellValue = left
+        self.right: abc.CellValue = right
+        self.op: str = op
+
+    @property
+    def l(self) -> abc.CellValue: return self.left
+    @l.setter
+    def l(self, value: abc.CellValue) -> None: self.left = value
+
+    @property
+    def r(self) -> abc.CellValue: return self.right
+    @r.setter
+    def r(self, value: abc.CellValue) -> None: self.right = value
+
+    @property
+    def o(self) -> str: return self.op
+    @o.setter
+    def o(self, op: str) -> None: self.op = op
+
+
+class ExprTernary(abc.Expression):
+    def __init__(self, condition: abc.CellValue, iftrue: abc.CellValue, iffalse: abc.CellValue, grouped: bool = False):
+        super().__init__(grouped)
+        self.condition: abc.CellValue = condition
+        self.iftrue: abc.CellValue = iftrue
+        self.iffalse: abc.CellValue = iffalse
+
+    @property
+    def c(self) -> abc.CellValue: return self.condition
+    @c.setter
+    def c(self, value: abc.CellValue) -> None: self.condition = value
+
+    @property
+    def t(self) -> abc.CellValue: return self.iftrue
+    @t.setter
+    def t(self, value: abc.CellValue) -> None: self.iftrue = value
+
+    @property
+    def f(self) -> abc.CellValue: return self.iffalse
+    @f.setter
+    def f(self, value: abc.CellValue) -> None: self.iffalse = value
+
+
+################################ Module Exports ################################
+
+
 __all__ = [
     "abc",
     ## ------------ ##
@@ -611,4 +709,9 @@ __all__ = [
     "List",
     "Map",
     "Params",
+    ## ------------ ##
+    "UnparsedExpression",
+    "ExprUnary",
+    "ExprBinary",
+    "ExprTernary",
 ]
