@@ -265,7 +265,7 @@ class MapRow(abc.Row):
 
     def edit_ndf(
         self,code: str,
-        context: converter.ConverterContext = converter.context_basic,
+        processor: converter.Processor = converter.convert_basic,
     ) -> Self:
         entries = self.__class__._entries_parser(code)
         if len(entries) != 1:
@@ -275,7 +275,7 @@ class MapRow(abc.Row):
             )
         return self.__apply_args(
             super().edit,
-            converter.find_converter(entries[0], context, 0)["value"],
+            processor(entries[0], processor, 0)["value"],
             {}
         )
 
@@ -329,14 +329,14 @@ class List(abc.List[ListRow]):
         return result
 
     def __from_str__(self, code: str,
-        context: converter.ConverterContext = converter.context_basic,
+        processor: converter.Processor = converter.convert_basic,
     ) -> t.Iterable[ListRow]:
         if self.is_root:  # default insert_str is implemented for scene root
             prs = parser.entries_root
         else:
             prs = parser.entries_list
         yield from (
-            self._row_type(**converter.find_converter(n, context, 0)) for n in prs(code)
+            self._row_type(**processor(n, processor, 0)) for n in prs(code)
         )
 
     def by_namespace(
@@ -576,10 +576,10 @@ class Map(abc.List[MapRow]):
     rm_k = remove_by_key
 
     def __from_str__(self, code: str,
-        context: converter.ConverterContext = converter.context_basic,
+        processor: converter.Processor = converter.convert_basic,
     ) -> t.Iterable[MapRow]:
         yield from (
-            self._row_type(*converter.pair(n, context, 0)["value"])
+            self._row_type(*converter.pair(n, processor, 0)["value"])
             for n in parser.entries_map(code)
         )
 

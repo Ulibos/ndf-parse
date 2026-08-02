@@ -191,7 +191,7 @@ class Row:
         return self.__edit(".edit()", "edited", args, kwargs)
 
     def edit_ndf(self, code: str,
-        context: converter.ConverterContext = converter.context_basic,
+        processor: converter.Processor = converter.convert_basic,
     ) -> Self:
         """edit_ndf(code, converter: converter.ConverterContext) -> self TODO: FINALIZE
         Edit a row using ndf code. The code should contain an expression
@@ -233,7 +233,7 @@ class Row:
                 "edit(code) expects exactly one statement to be present in the "
                 f"ndf code, got {len(entries)}."
             )
-        return self.__edit_dict(**converter.find_converter(entries[0], context, 0,))
+        return self.__edit_dict(**processor(entries[0], processor, 0,))
 
     @classmethod
     def from_ndf(cls, code: str) -> Self:
@@ -386,7 +386,7 @@ class Row:
 
     def expand(
         self,
-        context: converter.ConverterContext = converter.context_step,
+        processor: converter.Processor = converter.convert_expand,
     ) -> CellValue:
         """If current row is a string then converts it to a model data.
         Else silently skips it. TODO: FINALIZE
@@ -412,7 +412,7 @@ class Row:
                 f"Subclass in question: {self.__class__.__name__}")
         if isinstance(value, str):
             entries = parser.entries_root(value)
-            return self.__edit_dict(**converter.find_converter(entries[0], context, 0,)).value
+            return self.__edit_dict(**processor(entries[0], processor, 0,)).value
         else:
             return value
 
@@ -729,6 +729,7 @@ class List(t.Sequence[GR], Parentable):
     _row_type: t.Type[GR]
 
     def __init__(self) -> None:
+        super().__init__()
         self.__inner: t.List[GR] = []
 
     def inner(self) -> t.List[GR]:
@@ -1324,7 +1325,7 @@ class List(t.Sequence[GR], Parentable):
 
     # ================ VIRTUAL METHODS
     def __from_str__(self, code: str,
-        context: converter.ConverterContext = converter.context_basic,
+        processor: converter.Processor = converter.convert_basic,
     ) -> t.Iterable[GR]:
         """Most basic implementation for the code converter. Should be overriden
         as necessary.
@@ -1332,7 +1333,7 @@ class List(t.Sequence[GR], Parentable):
         :meta public:
         """
         yield from (
-            self._row_type(**converter.find_converter(n, context, 0))
+            self._row_type(**processor(n, processor, 0))
             for n in self._row_type._entries_parser(code)  # type: ignore
         )
 

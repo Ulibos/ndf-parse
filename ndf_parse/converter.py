@@ -9,20 +9,15 @@ from typing import (
     Union,
 )
 import tree_sitter as ts
+from .traverser import traverse
 
 
 DictWrapped = Dict[str, Any]
 ConverterReturn = Union[DictWrapped, str]
-Processor = Callable[[ts.Node, "ConverterContext", int], DictWrapped]
+Processor = Callable[[ts.Node, "Processor", int], DictWrapped]
 Processors = Dict[str, Processor]
 
 MAX_DEPTH: int = 0xFF_FF_FF_FF  # technically not max but deep enough for parsing
-
-class ConverterContext:
-    def __init__(self, max_depth: int, processors: Processors, terminator: Processor):
-        self.max_depth: int = max_depth
-        self.processors: Processors = processors
-        self.terminator: Processor = terminator
 
 
 # ============================= Utilities ==============================
@@ -41,54 +36,81 @@ def unignored_children(root_node: ts.Node) -> Iterator[ts.Node]:
             yield child
 
 
-# ============================= Converters =============================
+# =========================== Main Converters ==========================
 
-# parsers
-def convert(node: ts.Node, context: ConverterContext) -> md.List:
+def convert_basic(node: ts.Node, processor: Processor, depth: int = 0):
+    """
+    Default parser setup used since 0.10, used as main parser for
+    backwards compatibility.
+    """
+    return PROCESSORS.get(node.type, unparsed_expression)(node, convert_basic, depth+1)
+
+
+def convert_all(node: ts.Node, processor: Processor, depth: int = 0):
+    """Extended parser that parses everything (except comments)."""
+    return PROCESSORS_ALL.get(node.type, unparsed_expression)(node, convert_all, depth+1)
+
+
+def convert_expand(node: ts.Node, processor: Processor, depth: int = 0):
+    """
+    Designed to forecefully expand an expression and continue converting
+    in basic mode.
+    """
+    return PROCESSORS_ALL.get(node.type, unparsed_expression)(node, convert_basic, depth+1)
+
+
+def convert_exprs(node: ts.Node, processor: Processor, depth: int = 0):
+    """
+    Designed to work mostly like a basic converter except for expressions that
+    have complex types nested within them, those are parsed fully.
+    """
+    if node.type in ("expression_unary", "expression_binary", "expression_ternary"):
+        for n in traverse(node):
+            if n.type in ("object", "map", "template", "vector"):
+                return PROCESSORS_ALL.get(node.type, unparsed_expression)(node, convert_exprs, depth+1)
+    return PROCESSORS.get(node.type, unparsed_expression)(node, convert_exprs, depth+1)
+
+
+def convert(node: ts.Node, processor: Processor = convert_basic) -> md.List:
     result = md.List(is_root=True)
     for child_node in unignored_children(node):
-        child: DictWrapped = find_converter(child_node, context, 0)
+        child: DictWrapped = processor(child_node, processor, 0)
         result.add(**child)
     return result
 
 
-def find_converter(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    if (depth >= context.max_depth) \
-    or (node.type not in context.processors):
-        return context.terminator(node, context, depth)
-    return context.processors[node.type](node, context, depth + 1)
+# =========================== Type Converters ==========================
 
-
-def visibility(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    res_node: DictWrapped = find_converter(field(node, "item"), context, depth)
+def visibility(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
+    res_node: DictWrapped = processor(field(node, "item"), processor,  depth)
     res_node["visibility"] = field(node, "type").text.decode()
     return res_node
 
 
-def unnamed(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    res_node: DictWrapped = find_converter(field(node, "object"), context, depth)
+def unnamed(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
+    res_node: DictWrapped = processor(field(node, "object"), processor,  depth)
     res_node["visibility"] = "unnamed"
     return res_node
 
 
-def assignment(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    res_node: DictWrapped = find_converter(field(node, "value"), context, depth)
+def assignment(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
+    res_node: DictWrapped = processor(field(node, "value"), processor,  depth)
     res_node["namespace"] = field(node, "name").text.decode()
     return res_node
 
 
-def conv_object(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def conv_object(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     result = md.Object()
     result.type = field(node, "type").text.decode()
     members = field(node, "members")
     if members:
         for child_node in unignored_children(members):
-            child: DictWrapped = find_converter(child_node, context, depth)
+            child: DictWrapped = processor(child_node, processor,  depth)
             result.add(**child)
     return {"value": result}
 
 
-def template(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def template(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     result = md.Template()
     obj = field(node, "value")
     result.type = field(obj, "type").text.decode()
@@ -96,17 +118,17 @@ def template(node: ts.Node, context: ConverterContext, depth: int) -> DictWrappe
     members = field(obj, "members")
     if members:
         for child_node in unignored_children(members):
-            child: DictWrapped = find_converter(child_node, context, depth)
+            child: DictWrapped = processor(child_node, processor,  depth)
             result.add(**child)
     params = field(node, "params")
     if params:
         for child_node in unignored_children(params):
-            child: DictWrapped = find_converter(child_node, context, depth)
+            child: DictWrapped = processor(child_node, processor,  depth)
             result.params.add(**child)
     return {"value": result, "namespace": namespace}
 
 
-def _member_or_param(node: ts.Node, context: ConverterContext, depth: int) -> Tuple[str, DictWrapped]:
+def _member_or_param(node: ts.Node, processor: Processor, depth: int) -> Tuple[str, DictWrapped]:
     name = field(node, "name").text.decode()
     res_node: DictWrapped = {}
     type = node.child_by_field_name("type")
@@ -114,86 +136,86 @@ def _member_or_param(node: ts.Node, context: ConverterContext, depth: int) -> Tu
         res_node["type"] = type.text.decode()
     value_node = node.child_by_field_name("value")
     if value_node:
-        res_node.update(find_converter(value_node, context, depth))
+        res_node.update(processor(value_node, processor,  depth))
     return (name, res_node)
 
 
-def member(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    name, res_node = _member_or_param(node, context, depth)
+def member(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
+    name, res_node = _member_or_param(node, processor, depth)
     res_node["member"] = name
     return res_node
 
 
-def param(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    name, res_node = _member_or_param(node, context, depth)
+def param(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
+    name, res_node = _member_or_param(node, processor, depth)
     res_node["param"] = name
     return res_node
 
 
-def conv_list(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def conv_list(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     result = md.List()
     n_type = node.type
-    if n_type == "vector_type":
+    if n_type == "vector":
         result.type = field(node, "type").text.decode()
     items = node.child_by_field_name("items")
     if items is not None:
         for child_node in unignored_children(items):
-            child: DictWrapped = find_converter(child_node, context, depth)
+            child: DictWrapped = processor(child_node, processor,  depth)
             result.add(**child)
     return {"value": result}
 
 
-def conv_map(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def conv_map(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     result = md.Map()
     pairs = field(node, "pairs")
     if pairs:
         for child in unignored_children(pairs):
-            result.add(md.MapRow(*pair(child, context, depth)["value"]))
+            result.add(md.MapRow(*pair(child, processor, depth)["value"]))
     return {"value": result}
 
 
-def pair(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def pair(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     return {
         "value": (
-            find_converter(field(node, "left"), context, depth)["value"],
-            find_converter(field(node, "right"), context, depth)["value"],
+            processor(field(node, "left"), processor,  depth)["value"],
+            processor(field(node, "right"), processor,  depth)["value"],
         )
     }
 
 
-def expr_unary(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def expr_unary(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     return {"value": md.ExprUnary(
-        find_converter(field(node, "right"), context, depth)["value"],
+        processor(field(node, "right"), processor,  depth)["value"],
         field(node, "operator").text.decode(),
     )}
 
 
-def expr_binary(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def expr_binary(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     return {"value": md.ExprBinary(
-        find_converter(field(node, "left"), context, depth)["value"],
-        find_converter(field(node, "right"), context, depth)["value"],
+        processor(field(node, "left"), processor,  depth)["value"],
+        processor(field(node, "right"), processor,  depth)["value"],
         field(node, "operator").text.decode(),
     )}
 
 
 
-def expr_ternary(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
+def expr_ternary(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
     return {"value": md.ExprTernary(
-        find_converter(field(node, "cond"), context, depth)["value"],
-        find_converter(field(node, "true"), context, depth)["value"],
-        find_converter(field(node, "false"), context, depth)["value"],
+        processor(field(node, "cond"), processor,  depth)["value"],
+        processor(field(node, "true"), processor,  depth)["value"],
+        processor(field(node, "false"), processor,  depth)["value"],
     )}
 
 
-def group(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
-    result = find_converter(field(node, "item"), context, depth)
+def group(node: ts.Node, processor: Processor, depth: int) -> DictWrapped:
+    result = processor(field(node, "item"), processor,  depth)
     v = result["value"]
     if isinstance(v, abc.Expression):
         v.grouped = True
     return result
 
 
-def unparsed_expression(node: ts.Node, context: ConverterContext, depth: int):
+def unparsed_expression(node: ts.Node, processor: Processor, depth: int):
     return {"value": node.text.decode()}
 
 
@@ -207,7 +229,7 @@ IGNORE: List[str] = [
 PROCESSORS: Processors = {
     "visibility": visibility,
     "builtin_vector_type": conv_list,
-    "vector_type": conv_list,
+    "vector": conv_list,
     "assignment": assignment,
     "template": template,
     "object": conv_object,
@@ -220,25 +242,22 @@ PROCESSORS: Processors = {
 }
 
 PROCESSORS_ALL: Processors = PROCESSORS | {
-    "unary_expression": expr_unary,
-    "binary_expression": expr_binary,
-    "ternary": expr_ternary,
+    "expression_unary": expr_unary,
+    "expression_binary": expr_binary,
+    "expression_ternary": expr_ternary,
     "group": group,
 }
 
-# Default parser setup used since 0.10, used as main parser for
-# backwards compatibility.
-context_basic = ConverterContext(MAX_DEPTH, PROCESSORS, unparsed_expression)
 
-# Extended parser that parses everything (except comments).
-context_all = ConverterContext(MAX_DEPTH, PROCESSORS_ALL, unparsed_expression)
-
-# Variation of the extended parser, parses one step deep (technically 2:
-# first step is the expression itself, second is it's immediate items),
-# for finer control.
-context_step = ConverterContext(2, PROCESSORS_ALL, unparsed_expression)
-
-__all__ = ["convert", "find_converter", "DictWrapped"]
+__all__ = [
+    "DictWrapped",
+    "Processor",
+    "convert",
+    "convert_basic",
+    "convert_all",
+    "convert_expand",
+    "convert_exprs",
+]
 
 
 from . import model as md

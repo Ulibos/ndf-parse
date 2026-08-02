@@ -11,9 +11,10 @@ from . import converter
 from . import printer
 from . import traverser
 from . import model
+from . import cache
 from .parser import parse
 
-__version__ = "0.2.1"
+__version__ = "0.2.1-rc1"
 
 StrBytes = t.Union[str, bytes]
 
@@ -87,10 +88,14 @@ class Mod:
             self.mod_src
         ), f"Could not find path `{self.mod_src}` (expanded representation)."
         self.mod_dst = mod_dst
+        self.cache = cache.Cacher(mod_src)
         self.edits: t.List[Edit] = []
 
     def edit(
-        self, file_path: str, save: bool = True, ensure_no_errors: bool = True
+        self, file_path: str, save: bool = True,
+        ensure_no_errors: bool = True,
+        processor: converter.Processor = converter.convert_basic,
+        cache: t.Optional[bool] = None,
     ) -> Mod:
         """Creates a new edit. It is designed to work with ``with`` clause.
         Avoid using it outside of the ``with`` unless you know what you are
@@ -116,14 +121,28 @@ class Mod:
             Returns it's parent :class:`Mod` object. Required for ``with``
             statement to work correctly.
         """
-        with open(self.__src(file_path), "rb") as r:
-            self.edits.append(
-                Edit(convert(r.read(), ensure_no_errors), file_path, save)
+        do_cache, is_newer = self._get_cache_flags(file_path, cache)
+        if (not do_cache) or is_newer:
+            # reparse source file
+            with open(self.__src(file_path), "rb") as r:
+                edit = Edit(
+                    convert(r.read(), ensure_no_errors, processor),
+                    file_path, save,
+                )
+            if do_cache:
+                self.cache.save_cache(file_path, edit.tree)
+        else:
+            # read from cache
+            edit = Edit(self.cache.load_cache(file_path),
+                file_path, save,
             )
+        self.edits.append(edit)
         return self
 
     def parse_src(
-        self, file_path: str, ensure_no_errors: bool = True
+        self, file_path: str, ensure_no_errors: bool = True,
+        processor: converter.Processor = converter.convert_basic,
+        cache: t.Optional[bool] = None,
     ) -> model.List:
         """Parses a file from a source mod.
 
@@ -168,17 +187,25 @@ class Mod:
             ...             speed_row = unit.by_member('Speed')
             ...             speed_row.value += ' * 2'
         """
-        with open(self.__src(file_path), "rb") as r:
-            tree = convert(r.read(), ensure_no_errors)
-        return tree
+        do_cache, is_newer = self._get_cache_flags(file_path, cache)
+        if (not do_cache) or is_newer:
+            with open(self.__src(file_path), "rb") as r:
+                tree = convert(r.read(), ensure_no_errors, processor)
+            if do_cache:
+                self.cache.save_cache(file_path, tree)
+            return tree
+        else:
+            return self.cache.load_cache(file_path)
 
     def parse_dst(
-        self, file_path: str, ensure_no_errors: bool = True
+        self, file_path: str, ensure_no_errors: bool = True,
+        processor: converter.Processor = converter.convert_basic,
     ) -> model.List:
         """Parses a file from a destination mod.
 
         This function is identical to :func:`parse_src` in it's functionality
-        and intent.
+        and intent except for caching as it would clash with current caching
+        implementation as well as it doesn't make much sense.
 
         Parameters
         ----------
@@ -197,7 +224,7 @@ class Mod:
             Model representation of the source mod file.
         """
         with open(self.__dst(file_path), "rb") as r:
-            tree = convert(r.read(), ensure_no_errors)
+            tree = convert(r.read(), ensure_no_errors, processor)
         return tree
 
     def check_if_src_is_newer(self) -> bool:
@@ -233,6 +260,32 @@ class Mod:
         if os.path.exists(self.mod_dst):
             shutil.rmtree(self.mod_dst, ignore_errors=False)
         shutil.copytree(self.mod_src, self.mod_dst)
+
+    def _get_cache_flags(
+            self, file_path: str, cache: t.Optional[bool],
+        ) -> t.Tuple[bool, bool]:
+        """
+        Returns 2 bools, first says if caching should be enabled, second
+        says if source file is newer than cache file (is always false
+        when caching is disabled).
+
+        Parameters
+        ----------
+        file_path : str
+            Relative path to an ndf file inside a mod.
+        cache : bool | None
+            Switch that says if caching should be performed. When it's
+            None, decision is made based on `self.cache.enabled`.
+
+        Returns
+        -------
+        (bool, bool)
+            (do caching, source is newer than cache)
+        """
+        if cache is None:
+            return self.cache.enabled, False
+        else:
+            return cache, self.cache.data_is_newer(file_path)
 
     # getters, setters
     # mod_src
@@ -340,7 +393,7 @@ class Mod:
 
 def convert(
     data: t.Union[str, bytes], ensure_no_errors: bool = True,
-    context: converter.ConverterContext = converter.context_basic,
+    processor: converter.Processor = converter.convert_basic,
 ) -> model.List:
     """Converts `string`/`byte` data to a :class:`~model.List` object.
     Should be used to parse ndf files as a whole.
@@ -363,13 +416,13 @@ def convert(
     tree = parse(data, ensure_no_errors)
     if isinstance(tree, list):
         traverser.throw_tree_errors(data.decode(), tree, 0)
-    return converter.convert(tree, context)
+    return converter.convert(tree, processor)
 
 
 def expression(
     data: StrBytes,
     ensure_no_errors: bool = True,
-    context: converter.ConverterContext = converter.context_basic,
+    processor: converter.Processor = converter.convert_basic,
 ) -> t.Dict[str, t.Any]:
     """Converts `string`/`byte` data to a an expression wrapped in a
     `dict`. Should be used to parse individual expressions for further
@@ -439,13 +492,13 @@ def expression(
     tree = parse(data, ensure_no_errors)
     if isinstance(tree, list):
         traverser.throw_tree_errors(data, tree)
-    return converter.find_converter(tree.children[0], context, 0)
+    return processor(tree.children[0], processor, 0)
 
 
 def expressions(
     data: StrBytes,
     ensure_no_errors: bool = True,
-    context: converter.ConverterContext = converter.context_basic,
+    processor: converter.Processor = converter.convert_basic,
 ) -> t.List[t.Dict[str, t.Any]]:  # type: ignore
     """Same as :func:`expression`, only outputs a list of expressions instead of
     only the first one.
@@ -464,7 +517,7 @@ def expressions(
     tree = parse(data, ensure_no_errors)
     if isinstance(tree, list):
         traverser.throw_tree_errors(data, tree)
-    return list(converter.find_converter(x, context, 0) for x in tree.children)
+    return list(processor(x, processor, 0) for x in tree.children)
 
 
 def show_source_in_error_logs(value: bool):

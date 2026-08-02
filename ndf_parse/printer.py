@@ -267,15 +267,48 @@ def member_printer(state: State, member: md.MemberRow):
     # fmt: on
 
 
-def itemview_printer(state: State, item: md.abc.Row):
-    if isinstance(item, md.ParamRow):
-        return param_printer(state, item)
-    elif isinstance(item, md.MemberRow):
-        return member_printer(state, item)
-    elif isinstance(item, md.ListRow):
-        return root_assignment_printer(state, item)
-    else:
-        raise ValueError(f"{item} is not a sublass of model.DeclListRow.")
+def expression_unary(state: State, expr: md.ExprUnary):
+    w = state.write
+    if expr.grouped:
+        w("(")
+    w(expr.op)
+    parse(state, expr.value)
+    if expr.grouped:
+        w(")")
+
+
+def expression_binary(state: State, expr: md.ExprBinary):
+    _multiline_types = (md.abc.List, md.abc.Expression)
+    with_newline = \
+        isinstance(expr.left, _multiline_types) or \
+        isinstance(expr.right, _multiline_types)
+    wr = state.write_line if with_newline else state.write
+    w = state.write
+    if expr.grouped:
+        wr("(")
+    parse(state, expr.left)
+    w(f" {expr.op} ")
+    parse(state, expr.right)
+    if expr.grouped:
+        wr(")")
+
+
+def expression_ternary(state: State, expr: md.ExprTernary):
+    _multiline_types = (md.abc.List, md.abc.Expression)
+    with_newline = \
+        isinstance(expr.condition, _multiline_types) or \
+        isinstance(expr.iftrue, _multiline_types) or \
+        isinstance(expr.iffalse, _multiline_types)
+    wr = state.write_line if with_newline else state.write
+    if expr.grouped:
+        wr("(")
+    parse(state, expr.condition)
+    wr(" ? ")
+    parse(state, expr.iftrue)
+    wr(" : ")
+    parse(state, expr.iffalse)
+    if expr.grouped:
+        wr(")")
 
 
 def map_pair_printer(state: State, item: md.MapRow):
@@ -316,6 +349,10 @@ def print_condensed_or_multiline(
         w(close)
 
 
+def default(state: State, item: t.Any):
+    state.write(str(item))
+
+
 def parse(state: State, item: Tree) -> None:
     n_type = type(item)
     p: t.Optional[AnyPrinter] = NODE_PRINTERS.get(n_type, None)
@@ -326,10 +363,6 @@ def parse(state: State, item: Tree) -> None:
     return p(state, item)
 
 
-def default(state: State, item: t.Any):
-    state.write(str(item))
-
-
 NODE_PRINTERS: t.Dict[type, t.Callable[[State, t.Any], None]] = {
     md.Template: template,
     md.Object: object,
@@ -338,6 +371,9 @@ NODE_PRINTERS: t.Dict[type, t.Callable[[State, t.Any], None]] = {
     md.MemberRow: member_printer,
     md.ListRow: root_assignment_printer,
     md.List: parse_list,
+    md.ExprUnary: expression_unary,
+    md.ExprBinary: expression_binary,
+    md.ExprTernary: expression_ternary,
     tuple: pair,
     str: default,
     float: default,
