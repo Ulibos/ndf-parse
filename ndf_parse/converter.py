@@ -194,7 +194,7 @@ def group(node: ts.Node, context: ConverterContext, depth: int) -> DictWrapped:
 
 
 def unparsed_expression(node: ts.Node, context: ConverterContext, depth: int):
-    return {"value": md.UnparsedExpression(node.text.decode(), tree_ref=node)}
+    return {"value": node.text.decode()}
 
 
 IGNORE: List[str] = [
@@ -233,9 +233,10 @@ context_basic = ConverterContext(MAX_DEPTH, PROCESSORS, unparsed_expression)
 # Extended parser that parses everything (except comments).
 context_all = ConverterContext(MAX_DEPTH, PROCESSORS_ALL, unparsed_expression)
 
-# Variation of the extended parser, parses one step deep,
+# Variation of the extended parser, parses one step deep (technically 2:
+# first step is the expression itself, second is it's immediate items),
 # for finer control.
-context_step = ConverterContext(1, PROCESSORS_ALL, unparsed_expression)
+context_step = ConverterContext(2, PROCESSORS_ALL, unparsed_expression)
 
 __all__ = ["convert", "find_converter", "DictWrapped"]
 

@@ -1,10 +1,8 @@
 from __future__ import annotations
 import sys
 import typing as t
-import tree_sitter as ts
 from typing import overload
 from . import abc
-from .. import converter
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -345,18 +343,11 @@ class Map(abc.List[MapRow]):
     # fmt: on
 
 
-class UnparsedExpression(str):
-    tree_ref: ts.Node
-    def __new__(cls, *args: t.Any, tree_ref: ts.Node, **kwargs: t.Any) -> Self: ...
-    def rewrap(self, value: t.Any) -> Self: ...
-    def parse(
-        self,
-        context: converter.ConverterContext = converter.context_step,
-    ) -> t.Any: ...
-
 class ExprUnary(abc.Expression):
     value: abc.CellValue
     op: str
+
+    # fmt: off
     def __init__(self, value: abc.CellValue, op: str, grouped: bool = False) -> None: ...
 
     @property
@@ -368,12 +359,15 @@ class ExprUnary(abc.Expression):
     def o(self) -> str: ...
     @o.setter
     def o(self, op: str) -> None: ...
+    # fmt: on
 
 
 class ExprBinary(abc.Expression):
     left: abc.CellValue
     right: abc.CellValue
     op: str
+
+    # fmt: off
     def __init__(self, left: abc.CellValue, right: abc.CellValue, op: str, grouped: bool = False) -> None: ...
 
     @property
@@ -390,12 +384,15 @@ class ExprBinary(abc.Expression):
     def o(self) -> str: ...
     @o.setter
     def o(self, op: str) -> None: ...
+    # fmt: on
 
 
 class ExprTernary(abc.Expression):
     condition: abc.CellValue = condition
     iftrue: abc.CellValue = iftrue
     iffalse: abc.CellValue = iffalse
+
+    # fmt: off
     def __init__(self, condition: abc.CellValue, iftrue: abc.CellValue, iffalse: abc.CellValue, grouped: bool = False) -> None: ...
 
     @property
@@ -412,3 +409,4 @@ class ExprTernary(abc.Expression):
     def f(self) -> abc.CellValue: ...
     @f.setter
     def f(self, value: abc.CellValue) -> None: ...
+    # fmt: on

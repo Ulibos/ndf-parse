@@ -12,15 +12,12 @@ import tree_sitter as ts
 import typing as t
 import pprint
 
-from .. import converter
+from .. import converter, parser
 
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-
-if t.TYPE_CHECKING:
-    from . import UnparsedExpression
 
 
 def is_pair(arg: t.Any) -> bool:
@@ -55,6 +52,36 @@ AllRowInputs = t.Union[RowInput[GR], t.Iterable[RowInput[GR]]]
 
 
 # ============================= CLASSES ================================
+class Parentable:
+    _parent: t.Optional["Row"]
+
+    def __init__(self) -> None:
+        self._parent = None
+
+    @property
+    def parent(self) -> t.Optional["List[Row]"]:
+        """**(readonly)** A parent list to which this object belongs. Example:
+
+        .. code-block:: ndf
+
+            BigList is ListOfObjs(
+                first_obj = FirstObj("I'm first")
+            )
+
+        Getting ``parent`` for `FirstObj` would return `ListOfObjs`, not the row
+        it's stored in.
+        """
+        if self._parent is not None:
+            return self._parent.parent
+
+    @property
+    def parent_row(self) -> t.Optional[Row]:
+        """**(readonly)** A row to which this object belongs. In the example above
+        getting ``parent_row`` for `FirstObj` would not return the `ListOfObjs`
+        but a ``MemberRow[0](value=Object[...], member='first_obj', ... )``
+        where `value` is the `FirstObj`.
+        """
+        return self._parent
 
 
 class Row:
@@ -175,6 +202,8 @@ class Row:
 
             >>> from ndf_parse.model import ListRow
             >>> row = ListRow(value="12")
+            >>> row
+            ListRow[DANGLING](value='12')
             >>> row.edit_ndf("export NewName is 24")
             ListRow[DANGLING](value='24', visibility='export', namespace='NewName')
             >>> # If a value can be skipped it will remain unedited.
@@ -355,8 +384,10 @@ class Row:
                     return False
         return True
 
-    def __expand(self, key: str,
-        context: converter.ConverterContext = converter.context_step) -> None:
+    def expand(
+        self,
+        context: converter.ConverterContext = converter.context_step,
+    ) -> CellValue:
         """If current row is a string then converts it to a model data.
         Else silently skips it. TODO: FINALIZE
 
@@ -368,14 +399,22 @@ class Row:
             but only one step deep. Can be swapped with `converter.context_all`
             to parse the entire tree or with a custom one tailored to
             convert only specific nodes.
+        strict: bool, default=True
+            If set to True, then will raise an error when given property
+            is not a string (i.e. is already parsed). if set to False,
+            then will silently skip on non-strings.
         """
-        value = getattr(self, key)
-        if isinstance(value, UnparsedExpression):
-            setattr(self, key, value.parse(context))
-        elif isinstance(self, str):
-            ...
+        value: OptCellValue = getattr(self, 'value', None)
+        if value is None:
+            raise TypeError(
+                "This method is based on a Row subtype having a 'value' "
+                "parameter, however this subclass doesn't have it. "
+                f"Subclass in question: {self.__class__.__name__}")
+        if isinstance(value, str):
+            entries = parser.entries_root(value)
+            return self.__edit_dict(**converter.find_converter(entries[0], context, 0,)).value
         else:
-            return
+            return value
 
     # ================ DUNDER METHODS
     def __index__(self) -> int:
@@ -419,14 +458,14 @@ class Row:
         for aliases in self._args_names:
             if name in aliases:
                 # deal with parenting incoming
-                if isinstance(value, List):
+                if isinstance(value, Parentable):
                     value = t.cast(List[Row], value)
                     if value.parent is not None and value._parent != self:  # type: ignore
                         value = value.copy()
                     value._parent = self  # type: ignore
                 # deal with parenting outgoing
                 old_value = getattr(self, aliases[0], None)
-                if isinstance(old_value, List):
+                if isinstance(old_value, Parentable):
                     old_value._parent = None  # type: ignore
                 # set the attribute
                 object.__setattr__(self, aliases[0], value)
@@ -611,7 +650,7 @@ class Row:
                     break
 
 
-class List(t.Sequence[GR]):
+class List(t.Sequence[GR], Parentable):
     """List()
     An abstract class for list-likes of the model.
 
@@ -687,37 +726,10 @@ class List(t.Sequence[GR]):
     implemented because there is no much use for it with current implementation.
     """
 
-    @property
-    def parent(self) -> t.Optional["List[Row]"]:
-        """**(readonly)** A parent list to which this list belongs. Example:
-
-        .. code-block:: C
-
-            BigList is ListOfObjs(
-                first_obj = FirstObj("I'm first")
-            )
-
-        Getting ``parent`` for `FirstObj` would return `ListOfObjs`, not the row
-        it's stored in.
-        """
-        if self._parent is not None:
-            return self._parent.parent
-
-    @property
-    def parent_row(self) -> t.Optional[Row]:
-        """**(readonly)** A row to which this list belongs. In the example above
-        getting ``parent_row`` for `FirstObj` would not return the `ListOfObjs`
-        but a ``MemberRow[0](value=Object[...], member='first_obj', ... )``
-        where `value` is the `FirstObj`.
-        """
-        if self._parent is not None:
-            return self._parent
-
     _row_type: t.Type[GR]
 
     def __init__(self) -> None:
         self.__inner: t.List[GR] = []
-        self._parent: t.Optional[Row] = None
 
     def inner(self) -> t.List[GR]:
         """inner() -> list[GR]
@@ -1328,17 +1340,39 @@ class List(t.Sequence[GR]):
 # ============================ expressions =============================
 
 
-class Expression(object):
+class Expression(Parentable):
     """Expression()
     Serves mostly as a type detection helper plus incapsulates grouping to
     avoid excessive nesting in structures.
     """
+    _attribs: t.Tuple[str, ...]
+
     def __init__(self, grouped: bool = False):
-        self.grouped = grouped
+        super().__init__()
+        self.grouped: bool = grouped
 
     def __repr__(self):
-        args = (f'{k}={repr(getattr(self, k))}' for k in vars(self))
+        args = (
+            f'{k}={repr(getattr(self, k))}' \
+            for k in vars(self) \
+            if k!="_parent"
+        )
         return f'{self.__class__.__name__}({", ".join(args)})'
+
+    def __setattr__(self, name: str, value: t.Any) -> None:
+        if name not in self._attribs:
+            return super().__setattr__(name, value)
+        if isinstance(value, Parentable):
+            value = t.cast(List[Row], value)
+            if value.parent is not None and value._parent != self:  # type: ignore
+                value = value.copy()
+            value._parent = self  # type: ignore
+        # deal with parenting outgoing
+        old_value = getattr(self,name, None)
+        if isinstance(old_value, Parentable):
+            old_value._parent = None  # type: ignore
+        # set the attribute
+        return super().__setattr__(name, value)
 
 
 # ========================= pprint dispatcher ==========================

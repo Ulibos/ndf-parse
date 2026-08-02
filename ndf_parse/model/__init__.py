@@ -122,7 +122,6 @@ from __future__ import annotations
 import typing as t
 import sys
 import copy
-import tree_sitter as ts
 from .. import converter, parser
 from . import abc
 
@@ -611,26 +610,9 @@ class Map(abc.List[MapRow]):
 ################################## Param Items #################################
 
 
-class UnparsedExpression(str):
-    tree_ref: ts.Node
-
-    def __new__(cls, *args: t.Any, **kwargs: t.Any) -> Self:
-        if "tree_ref" not in kwargs:
-            raise TypeError("Missing required keyword argument: 'tree_ref'")
-        tree_ref = kwargs.pop("tree_ref")
-        result = str.__new__(cls, *args, **kwargs)
-        result.tree_ref = tree_ref
-        return result
-
-    def rewrap(self, value: t.Any) -> Self:
-        return self.__class__(str(value), tree_ref=self.tree_ref)
-
-    def parse(self, context: converter.ConverterContext = converter.context_step):
-        return converter.find_converter(
-            self.tree_ref, context, 0)["value"]
-
-
 class ExprUnary(abc.Expression):
+    _attribs = ("value",)
+
     def __init__(self, value: abc.CellValue, op: str, grouped: bool = False):
         super().__init__(grouped)
         self.value: abc.CellValue = value
@@ -648,6 +630,8 @@ class ExprUnary(abc.Expression):
 
 
 class ExprBinary(abc.Expression):
+    _attribs = ("left", "right")
+
     def __init__(self, left: abc.CellValue, right: abc.CellValue, op: str, grouped: bool = False):
         super().__init__(grouped)
         self.left: abc.CellValue = left
@@ -671,6 +655,8 @@ class ExprBinary(abc.Expression):
 
 
 class ExprTernary(abc.Expression):
+    _attribs = ("condition", "iftrue", "iffalse")
+
     def __init__(self, condition: abc.CellValue, iftrue: abc.CellValue, iffalse: abc.CellValue, grouped: bool = False):
         super().__init__(grouped)
         self.condition: abc.CellValue = condition
@@ -710,7 +696,6 @@ __all__ = [
     "Map",
     "Params",
     ## ------------ ##
-    "UnparsedExpression",
     "ExprUnary",
     "ExprBinary",
     "ExprTernary",
