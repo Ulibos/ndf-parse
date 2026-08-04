@@ -14,9 +14,12 @@ from . import model
 from . import cache
 from .parser import parse
 
-__version__ = "0.2.1-rc1"
+__version__ = "0.2.1-rc2"
 
 StrBytes = t.Union[str, bytes]
+
+converter_default = converter.convert_basic
+converter_default_expand = converter.convert_expand
 
 class Edit:
     """Holds data about currently edited file.
@@ -266,7 +269,7 @@ class Mod:
         ) -> t.Tuple[bool, bool]:
         """
         Returns 2 bools, first says if caching should be enabled, second
-        says if source file is newer than cache file (is always false
+        says if source file is newer than cache file (is always False
         when caching is disabled).
 
         Parameters
@@ -282,10 +285,11 @@ class Mod:
         (bool, bool)
             (do caching, source is newer than cache)
         """
-        if cache is None:
-            return self.cache.enabled, False
+        do_cache = self.cache.enabled if cache is None else cache
+        if do_cache:
+             return True, self.cache.data_is_newer(file_path)
         else:
-            return cache, self.cache.data_is_newer(file_path)
+            return False, False
 
     # getters, setters
     # mod_src

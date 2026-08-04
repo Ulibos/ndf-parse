@@ -4,6 +4,8 @@ import os
 import pickle
 from .model import List
 
+DEFAULT_CACHE_PATH = "./.ndf_cache"
+
 class Cacher:
     DATA = 0
     CACHE = 1
@@ -11,7 +13,7 @@ class Cacher:
     data_path: str
     enabled: bool
 
-    def __init__(self, data_path: str, cache_path: str = "./ndf_cache"):
+    def __init__(self, data_path: str, cache_path: str = DEFAULT_CACHE_PATH):
         self.cache_path = cache_path
         self.data_path = data_path
         self.enabled = False

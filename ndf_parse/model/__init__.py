@@ -122,8 +122,9 @@ from __future__ import annotations
 import typing as t
 import sys
 import copy
-from .. import converter, parser
+from .. import parser
 from . import abc
+from .. import converter as m_conv
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -265,7 +266,7 @@ class MapRow(abc.Row):
 
     def edit_ndf(
         self,code: str,
-        processor: converter.Processor = converter.convert_basic,
+        converter: abc.OptConv = None,
     ) -> Self:
         entries = self.__class__._entries_parser(code)
         if len(entries) != 1:
@@ -273,6 +274,7 @@ class MapRow(abc.Row):
                 "edit(code) expects exactly one statement to be present in the "
                 f"ndf code, got {len(entries)}."
             )
+        processor = ndf_parse.converter_default if converter is None else converter
         return self.__apply_args(
             super().edit,
             processor(entries[0], processor, 0)["value"],
@@ -328,13 +330,12 @@ class List(abc.List[ListRow]):
         result.type = self.type
         return result
 
-    def __from_str__(self, code: str,
-        processor: converter.Processor = converter.convert_basic,
-    ) -> t.Iterable[ListRow]:
+    def __from_str__(self, code: str) -> t.Iterable[ListRow]:
         if self.is_root:  # default insert_str is implemented for scene root
             prs = parser.entries_root
         else:
             prs = parser.entries_list
+        processor = ndf_parse.converter_default
         yield from (
             self._row_type(**processor(n, processor, 0)) for n in prs(code)
         )
@@ -575,11 +576,10 @@ class Map(abc.List[MapRow]):
 
     rm_k = remove_by_key
 
-    def __from_str__(self, code: str,
-        processor: converter.Processor = converter.convert_basic,
-    ) -> t.Iterable[MapRow]:
+    def __from_str__(self, code: str) -> t.Iterable[MapRow]:
+        processor = ndf_parse.converter_default
         yield from (
-            self._row_type(*converter.pair(n, processor, 0)["value"])
+            self._row_type(*m_conv.pair(n, processor, 0)["value"])
             for n in parser.entries_map(code)
         )
 
@@ -700,3 +700,5 @@ __all__ = [
     "ExprBinary",
     "ExprTernary",
 ]
+
+import ndf_parse

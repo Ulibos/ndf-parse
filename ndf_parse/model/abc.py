@@ -12,13 +12,15 @@ import tree_sitter as ts
 import typing as t
 import pprint
 
-from .. import converter, parser
+from .. import parser
+from ..converter import Processor
 
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
 
+OptConv = t.Optional[Processor]
 
 def is_pair(arg: t.Any) -> bool:
     """is_pair(arg) -> bool
@@ -191,9 +193,9 @@ class Row:
         return self.__edit(".edit()", "edited", args, kwargs)
 
     def edit_ndf(self, code: str,
-        processor: converter.Processor = converter.convert_basic,
+        converter: OptConv = None,
     ) -> Self:
-        """edit_ndf(code, converter: converter.ConverterContext) -> self TODO: FINALIZE
+        """edit_ndf(code, converter: converter.Processor | None) -> self TODO: FINALIZE
         Edit a row using ndf code. The code should contain an expression
         representing a single object of the same type as the row is, i.e. for
         :class:`ListRow <ndf_parse.model.ListRow>` it would look like this:
@@ -233,6 +235,7 @@ class Row:
                 "edit(code) expects exactly one statement to be present in the "
                 f"ndf code, got {len(entries)}."
             )
+        processor = ndf_parse.converter_default if converter is None else converter
         return self.__edit_dict(**processor(entries[0], processor, 0,))
 
     @classmethod
@@ -386,7 +389,7 @@ class Row:
 
     def expand(
         self,
-        processor: converter.Processor = converter.convert_expand,
+        converter: OptConv = None,
     ) -> CellValue:
         """If current row is a string then converts it to a model data.
         Else silently skips it. TODO: FINALIZE
@@ -412,6 +415,7 @@ class Row:
                 f"Subclass in question: {self.__class__.__name__}")
         if isinstance(value, str):
             entries = parser.entries_root(value)
+            processor = ndf_parse.converter_default_expand if converter is None else converter
             return self.__edit_dict(**processor(entries[0], processor, 0,)).value
         else:
             return value
@@ -1324,14 +1328,13 @@ class List(t.Sequence[GR], Parentable):
         return value
 
     # ================ VIRTUAL METHODS
-    def __from_str__(self, code: str,
-        processor: converter.Processor = converter.convert_basic,
-    ) -> t.Iterable[GR]:
+    def __from_str__(self, code: str) -> t.Iterable[GR]:
         """Most basic implementation for the code converter. Should be overriden
         as necessary.
 
         :meta public:
         """
+        processor = ndf_parse.converter_default
         yield from (
             self._row_type(**processor(n, processor, 0))
             for n in self._row_type._entries_parser(code)  # type: ignore
@@ -1398,3 +1401,5 @@ def _pprint_model_list(
 
 pprint.PrettyPrinter._dispatch[List.__repr__] = _pprint_model_list  # type: ignore
 d = pprint.PrettyPrinter._dispatch  # type: ignore
+
+import ndf_parse
