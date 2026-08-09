@@ -1,12 +1,11 @@
 # Tasks for this upadte
 
-- [-]   consider creating a separate string type for parsed string (should help
-        with comparisons of cases like "test" == 'test')
-- [ ]   remove `playground.py`
 - [?]   rework list-likes copying from dangling rows (with new parenting to a row
         should be pretty trivial)
 - [ ]   refactor `scripts/docs_tests.py` to only operate on examples, doc tests
-        are handled by sphinx.
+        are handled by sphinx
 - [ ]   sync docs with new changes
 - [ ]   expand tests to cover new datatypes
-- [ ]   copying for expressions
+- [x]   copying for expressions
+- [ ]   implement Comparable protocol for easier reasoning about what can be
+        compared

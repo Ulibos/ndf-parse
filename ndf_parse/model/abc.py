@@ -1349,19 +1349,70 @@ class Expression(Parentable):
     Serves mostly as a type detection helper plus incapsulates grouping to
     avoid excessive nesting in structures.
     """
-    _attribs: t.Tuple[str, ...]
+    _attribs: t.Tuple[str, ...]  # attribs that might have parentable values
+    _comparables: t.Tuple[str, ...]
+    grouped: bool = False
 
     def __init__(self, grouped: bool = False):
         super().__init__()
         self.grouped: bool = grouped
 
+    def compare(self, other: object, existing_only: bool = True) -> bool:
+        """Compares 2 expressions. If `existing_only` is ``True`` (the
+        default) then it acts as a pattern matcher, i.e. it compares only
+        with attributes present in the second object and non-None, allowing
+        to filter out objects with specific values. If `existing_only` is
+        ``False`` then acts as `__eq__()`.
+        """
+        if hasattr(other, "__dict__"):
+            other_data = t.cast(t.Mapping[str, t.Any], other)
+        else:
+            other_data = vars(other)
+
+        for k in self._comparables:
+            if k not in other_data:
+                if existing_only:
+                    continue
+                else:
+                    return False
+            v1 = getattr(self, k)
+            v2 = other_data[k]
+            if v2 is None and existing_only:
+                continue
+            if isinstance(v2, type(v1)) and hasattr(v1, "compare"):
+                if not v1.compare(v2, existing_only=existing_only):
+                    return False
+            elif v1 != v2:
+                return False
+        return True
+
     def __repr__(self):
         args = (
             f'{k}={repr(getattr(self, k))}' \
             for k in vars(self) \
-            if k!="_parent"
+            if k != "_parent"
         )
         return f'{self.__class__.__name__}({", ".join(args)})'
+
+    def __deepcopy__(self, memo: t.Dict[int, t.Any]) -> Self:
+        cls = self.__class__
+        new = cls.__new__(cls)
+        memo[id(self)] = new
+        for k, v in vars(self).items():
+            if k != "_parent":
+                setattr(new, k, copy.deepcopy(v, memo))
+        new._parent = None
+        return new
+
+    def copy(self) -> Self:
+        """Performs a deep copy of an expression. It's an alias to the :meth:`__deepcopy__` method."""
+        return self.__deepcopy__({})
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return all(getattr(self, k) == getattr(other, k) \
+                   for k in vars(self) if k != "_parent")
 
     def __setattr__(self, name: str, value: t.Any) -> None:
         if name not in self._attribs:

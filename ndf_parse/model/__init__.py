@@ -612,6 +612,7 @@ class Map(abc.List[MapRow]):
 
 class ExprUnary(abc.Expression):
     _attribs = ("value",)
+    _comparables = ("value", "op")
 
     def __init__(self, value: abc.CellValue, op: str, grouped: bool = False):
         super().__init__(grouped)
@@ -631,6 +632,7 @@ class ExprUnary(abc.Expression):
 
 class ExprBinary(abc.Expression):
     _attribs = ("left", "right")
+    _comparables = ("left", "right", "op")
 
     def __init__(self, left: abc.CellValue, right: abc.CellValue, op: str, grouped: bool = False):
         super().__init__(grouped)
@@ -656,6 +658,7 @@ class ExprBinary(abc.Expression):
 
 class ExprTernary(abc.Expression):
     _attribs = ("condition", "iftrue", "iffalse")
+    _comparables = _attribs
 
     def __init__(self, condition: abc.CellValue, iftrue: abc.CellValue, iffalse: abc.CellValue, grouped: bool = False):
         super().__init__(grouped)
